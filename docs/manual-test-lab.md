@@ -40,7 +40,7 @@ Debug builds also expose **Demo fixtures** (overflow on home) to inject discover
 
 ## Demo fixtures (debug only)
 
-Open **Demo fixtures** on home. Grouped One-shot / Multi-day / Ambient inject buttons, plus payment backend toggle (fake vs staging open-banking relay).
+Open **Demo fixtures** on home. Grouped One-shot / Multi-day / Ambient inject buttons, plus payment backend toggle (fake vs staging open-banking relay). **Butlaroo order** exercises UI overwrite with a Fake menu (also zone `BUTLAROO`).
 
 Release builds omit Demo.
 

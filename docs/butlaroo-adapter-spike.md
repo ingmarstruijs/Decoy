@@ -1,113 +1,82 @@
-# Butlaroo adapter spike (Phase 7 candidate)
+# Butlaroo adapter — UI overwrite (Phase 7 candidate)
 
-Technical sketch for a **cooperative** Decoy ↔ [Butlaroo](https://www.butlaroo.com/) capability plugin. Not implemented yet. CI stays on fixtures; live calls need partner staging credentials.
+Decoy’s product idea for vendors like [Butlaroo](https://www.butlaroo.com/): **ignore their WebView/app UI**, render native Compose, and speak only the **minimum guest backend** their QR already uses.
 
-Butlaroo is a hospitality ordering OS (QR table/pitch, cottage delivery, charge-to-booking / PMS, Butlaroo Pay). Enterprise materials mention REST + webhooks at `api.butlaroo.com` — **public developer docs are not available**; this spike assumes partner API access.
+Partner/open API access is a later **stabilization** path, not a prerequisite for starting.
 
-## Why Butlaroo
+## Status
 
-| Decoy use case | Butlaroo surface |
-|----------------|------------------|
-| Terrace / campsite order (One-shot) | QR ordering → kitchen |
-| Stay + pitch orders (Multi-day) | Charge to booking / cottage delivery |
-| Unresolved public QR today | Real Butlaroo table QR → vendor HTTPS (no Decoy session) |
+| Piece | State |
+|-------|--------|
+| Fixture UI overwrite (`decoy://butlaroo/order?…`) | **Shipped** — Demo + public-qr PNG |
+| Host match for `*.butlaroo.app` / `*.butlaroo.com` | **Shipped** — opens plugin; live menu → capture Error |
+| Live menu / order HTTP | **Blocked** on one real guest QR (+ optional HAR) |
+| Partner REST (`api.butlaroo.com`) | Optional later |
 
-Fits Phase 7: explicit plugin + privacy-net for **known hosts only**, not “every street QR works.”
+CI never calls production Butlaroo hosts. Fake backend only.
 
-## Non-goals (this spike)
+## What UI overwrite means here
 
-- Scraping Butlaroo guest WebViews or reverse-engineering private apps
-- Embedding Butlaroo HTML in Decoy
-- Production PSP settlement without Phase 4b payment rail
-- Calling production `api.butlaroo.com` from CI
+| Do | Do not |
+|----|--------|
+| Match QR/URL → Compose `OrderForm` | Load Butlaroo HTML in a WebView |
+| Call allowlisted hosts via `:privacy-net` | System overlay on top of their Android app |
+| Fake twin for emulator | Silent Unresolved when host is clearly Butlaroo |
+| Strip account / IBAN / marketing fields | Ship production kitchen tickets without capture |
 
-## Prerequisites
+## Try now
 
-1. Partner / venue staging tenant + API credentials (or documented open endpoints)
-2. Allowlist hosts (e.g. `api.butlaroo.com`, staging equivalent) in privacy HTTP defaults
-3. Fixture twin: recorded menu/order JSON so emulator path never hits live hosts
-4. Threat-model note if any residual identifiers leave the device
+1. Debug → **Demo fixtures** → **Butlaroo order**, or zone code `BUTLAROO`
+2. Scan [`fixtures/public-qr/decoy-butlaroo-order.png`](../fixtures/public-qr/decoy-butlaroo-order.png)
+3. Paste `https://order.butlaroo.app/venue/demo?table=12` → Error: *live menu not captured yet* (not generic Unresolved)
 
-## Target flow — menu → order → pay / charge-to-booking
+## Architecture
 
 ```mermaid
-sequenceDiagram
-  participant User
-  participant Decoy
-  participant Plugin as ButlarooPlugin
-  participant API as Butlaroo_API_staging
-  participant Pay as PaymentPort
-
-  User->>Decoy: Scan QR or paste URL
-  Decoy->>Plugin: match known host / venue token
-  Plugin->>API: GET menu (venue + table/pitch)
-  API-->>Plugin: menu items + modifiers
-  Plugin-->>Decoy: PluginUiState.Order (field policy)
-  User->>Decoy: Place order
-  alt Pay now (card / open-banking)
-    Decoy->>Pay: authorize amount (Fake or Phase 4b)
-    Pay-->>Decoy: paid token / status
-    Plugin->>API: POST order + payment ref
-  else Charge to booking (stay context)
-    Plugin->>API: POST order charge-to-booking (pitch/room claim)
-  end
-  API-->>Plugin: order accepted / KDS ticket id
-  Plugin-->>Decoy: complete → One-shot wipe or Multi-day stay keep
+flowchart LR
+  Qr[Butlaroo_QR_or_URL] --> Plugin[ButlarooOrderPlugin]
+  Plugin --> Fake[FakeButlarooBackend]
+  Plugin --> Live[LiveButlarooBackend]
+  Fake --> UI[OrderForm]
+  Live -->|until_capture| Err[PluginUiState.Error]
+  Live -->|after_capture| UI
+  UI --> Pay[PaymentPort_Fake]
 ```
 
-### Step detail
+Code:
 
-| Step | Decoy | Butlaroo (assumed) | Notes |
-|------|-------|--------------------|-------|
-| **1. Discover** | Scan / paste | Guest QR → `https://…butlaroo…` with venue + table/pitch | Today: Unresolved. With plugin: parse token only; never load vendor HTML |
-| **2. Resolve** | `ButlarooOrderPlugin.matches` | — | Host allowlist + path/query shape |
-| **3. Menu** | `render` → order UI | `GET` menu for venue | Cache in-session; no analytics SDKs |
-| **4. Field policy** | Core classifier | Vendor may ask email/account | Alias / Omit / Consent per existing policy |
-| **5a. Pay** | `PaymentPort` | Order + payment reference | Fake in CI; staging relay / 4b later |
-| **5b. Charge-to-booking** | Multi-day stay attrs (`pitch`, `stayId`) | Post folio / booking line | Needs stay claim cooperative with park PMS |
-| **6. Complete** | Dispose One-shot or keep vault stay | Kitchen / KDS already has ticket | History breadcrumb OK; no receipt dossier |
+- `fixtures/.../butlaroo/ButlarooBackend.kt` — port + host allowlist
+- `FakeButlarooBackend` / `LiveButlarooBackend`
+- `ButlarooOrderPlugin`
 
-## Plugin shape (sketch)
+## Capture protocol (unblocks live)
 
-```
-fixtures or :plugins-butlaroo/
-  ButlarooOrderPlugin          // One-shot terrace / table QR
-  ButlarooStayChargePlugin     // optional: Multi-day pitch → charge-to-booking
-  ButlarooFakeBackend          // CI: canned menu + accept order
-  ButlarooHttpBackend          // staging only; privacy-net client
-```
+Public web search does **not** expose real table QR URLs. To fill `LiveButlarooBackend`:
 
-Match rule (illustrative):
+1. At a venue (or from a willing operator), scan one table QR
+2. Copy the HTTPS landing URL (strip personal query params if any)
+3. Optionally export a browser HAR of the menu load (XHR/fetch only)
+4. Record: auth handshake (e.g. client register), menu GET, order POST shapes
+5. Implement those calls behind the allowlist; keep Fake as CI default
+6. Add a redacted sample URL under `fixtures/public-qr/` docs (no secrets)
 
-- URL host in allowlist **and** path/query contains venue or table token  
-- Injected fixture: `decoy://butlaroo/order?fixture=1` for Demo / emulator
+Until then, live hosts stay on the explicit capture Error screen.
 
-## Real QR testing (now vs later)
+## Target flow (after capture)
 
-| When | What to do | Expected |
-|------|------------|----------|
-| **Now (6b)** | Scan a real Butlaroo table QR or paste its HTTPS URL | Unresolved — decode local, no vendor call |
-| **Later (7)** | Same QR with plugin + staging | Menu → order → Fake/staging pay or charge-to-booking |
-| **Corpus** | Optionally add redacted sample URLs under `fixtures/public-qr/` as Unresolved cases | Document host pattern only; no live secrets |
+Menu → order → pay (Fake / Phase 4b) or later charge-to-booking for Multi-day stays. Same sequence as earlier spike diagrams; Fake pay only in CI.
 
-## Open questions (block implementation)
+## Open questions
 
-1. Exact public vs partner API surface (auth, menu, order, charge-to-booking)?
-2. Can a guest QR be resolved to venue/table **without** opening the guest web app?
-3. Charge-to-booking: which claim proves “pitch 42 / room 12” without full guest PII?
-4. Webhook necessity for order status, or request/response enough for v1?
-5. GDPR: what leaves the device on order submit (minimal basket + pay ref only)?
-
-## Exit for “spike done”
-
-- [ ] Partner confirms API path (or documents gap → cooperative protocol request)
-- [ ] This sketch accepted; fixture backend interface named
-- [ ] Phase 7 work item unblocked or parked with explicit blocker
+1. Exact guest API paths after QR land (needs capture)
+2. Whether table id is always in the URL vs session cookie (Decoy uses empty cookie jar — may need token in query)
+3. Charge-to-booking claims without full guest PII
+4. Residual identifiers on order submit (threat-model update if needed)
 
 ## Related
 
-- [development-phases.md](development-phases.md) — Phase 7, live API ladder
-- [plugins-architecture.md](plugins-architecture.md)
-- [payments.md](payments.md) — Fake vs Phase 4b
-- [public-qr-samples.md](public-qr-samples.md) — scan real QR → Unresolved today
+- [development-phases.md](development-phases.md) — Phase 7
+- [plugins-architecture.md](plugins-architecture.md) — open protocol vs UI overwrite
+- [public-qr-samples.md](public-qr-samples.md)
+- [payments.md](payments.md)
 - [threat-model.md](threat-model.md)

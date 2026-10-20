@@ -31,6 +31,7 @@ data class DemoActions(
     val onInjectPortalQr: () -> Unit,
     val onInjectEvQr: () -> Unit,
     val onInjectVendingQr: () -> Unit,
+    val onInjectButlarooQr: () -> Unit,
     val onInjectCabinQr: () -> Unit,
     val onInjectFestivalQr: () -> Unit,
     val onInjectBleCampsite: () -> Unit,
@@ -78,6 +79,7 @@ fun DemoSheet(
             DemoBtn("Captive portal", "inject_portal_qr", actions.onInjectPortalQr)
             DemoBtn("EV charging", "inject_ev_qr", actions.onInjectEvQr)
             DemoBtn("Vending", "inject_vending_qr", actions.onInjectVendingQr)
+            DemoBtn("Butlaroo order", "inject_butlaroo_qr", actions.onInjectButlarooQr)
 
             Section("Multi-day")
             DemoBtn("Campsite stay", "inject_stay_qr", actions.onInjectStayQr)

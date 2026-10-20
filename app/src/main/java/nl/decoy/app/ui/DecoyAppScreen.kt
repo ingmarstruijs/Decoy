@@ -170,6 +170,7 @@ fun DecoyAppScreen(
                     onInjectPortalQr = { closeDemoAnd(demoActions.onInjectPortalQr) },
                     onInjectEvQr = { closeDemoAnd(demoActions.onInjectEvQr) },
                     onInjectVendingQr = { closeDemoAnd(demoActions.onInjectVendingQr) },
+                    onInjectButlarooQr = { closeDemoAnd(demoActions.onInjectButlarooQr) },
                     onInjectCabinQr = { closeDemoAnd(demoActions.onInjectCabinQr) },
                     onInjectFestivalQr = { closeDemoAnd(demoActions.onInjectFestivalQr) },
                     onInjectBleCampsite = { closeDemoAnd(demoActions.onInjectBleCampsite) },

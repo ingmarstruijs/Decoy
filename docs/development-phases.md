@@ -42,7 +42,7 @@ flowchart TB
 | Fixtures / inject / Demo sheet | 0–6 | No (CI stubs) |
 | Scan/decode public QR → plugin or Unresolved | 6b | Decode local; vendor API **no** |
 | Real open-banking / Web Payments rail | 4b | Yes — payment only |
-| First venue/capability live adapter | 7 / M5 | Yes — per explicit plugin (candidate: Butlaroo) |
+| First venue/capability live adapter | 7 / M5 | Yes — per explicit plugin (Butlaroo UI overwrite fixture; live after capture) |
 | Arbitrary retail/parking without open adapter | — | **Out of scope** |
 
 ## Cross-cutting rules
@@ -384,14 +384,19 @@ Manual keypad remains a shared trigger variant. Each case meets the acceptance c
 
 **Outcome:** first live capability adapters and/or venues that speak Decoy-native claims.
 
-### Candidate: Butlaroo
+### Candidate: Butlaroo (UI overwrite first)
 
-[Butlaroo](https://www.butlaroo.com/) (hospitality QR / charge-to-booking / PMS) is the **first named Phase 7 candidate**. Spike: [butlaroo-adapter-spike.md](butlaroo-adapter-spike.md) (menu → order → pay or charge-to-booking). Blocked on partner API access; real table QR codes stay **Unresolved** until an explicit plugin ships.
+[Butlaroo](https://www.butlaroo.com/) is the first named Phase 7 candidate. **UI overwrite** ships as a fixture + host match; live menu HTTP waits on a captured guest QR. See [butlaroo-adapter-spike.md](butlaroo-adapter-spike.md).
+
+- [x] Fixture Compose order + Fake backend + Demo / public-qr
+- [x] Allowlisted host match → capture-needed Error (not generic Unresolved)
+- [ ] Live `fetchMenu` / `submitOrder` after capture
+- [ ] Optional partner API as stabilization path
 
 ### Work
 
 - One cooperating venue or open protocol + explicit plugin (privacy-net on fetches)
-- **Butlaroo:** staging HTTP backend + fixture twin; host allowlist; no vendor WebView
+- **Butlaroo:** UI overwrite plugin + Fake twin; Live backend after capture (no vendor WebView)
 - Optional minimal capability-fetch for **known** hosts only
 - Venue claims such as `paid`, `pitch 42` instead of full PII forms where they cooperate
 - Optional cryptographic / ZKP-style verification **only** where verifiers cooperate
@@ -400,13 +405,14 @@ Manual keypad remains a shared trigger variant. Each case meets the acceptance c
 ### Non-goals
 
 - Required for first F-Droid-ready posture (M4)
-- Scraping private vendor apps / guest WebViews
+- Scraping private vendor apps / embedding guest WebViews
 - “Every QR on the street works”
 - Fabricating regulated identifiers
 
 ### Exit criteria
 
-- [ ] At least one live or cooperative adapter + protocol sketch ([butlaroo-adapter-spike.md](butlaroo-adapter-spike.md) started)
+- [x] Protocol / UI-overwrite sketch + fixture path ([butlaroo-adapter-spike.md](butlaroo-adapter-spike.md))
+- [ ] At least one live or captured guest-backend path on staging/manual
 - [ ] Threat model updated if guarantees change
 
 ---

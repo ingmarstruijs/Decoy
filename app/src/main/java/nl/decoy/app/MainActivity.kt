@@ -145,6 +145,9 @@ class MainActivity : ComponentActivity() {
                             onInjectVendingQr = {
                                 resolve(DiscoveryInput.Qr(FixtureCatalog.injectedVendingQr))
                             },
+                            onInjectButlarooQr = {
+                                resolve(DiscoveryInput.Qr(FixtureCatalog.injectedButlarooQr))
+                            },
                             onInjectCabinQr = {
                                 resolve(DiscoveryInput.Qr(FixtureCatalog.injectedCabinQr))
                             },

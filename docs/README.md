@@ -16,7 +16,7 @@ Specs and architecture for Decoy. The manifesto lives in the root [README](../RE
 10. [Dev setup](dev-setup.md) — build, install, adb inject
 11. [Manual testing](manual-test-lab.md) — product home, Scan, Demo fixtures
 12. [Public QR samples](public-qr-samples.md) — print/scan/paste corpus
-13. [Butlaroo adapter spike](butlaroo-adapter-spike.md) — Phase 7 candidate (menu → order → pay)
+13. [Butlaroo adapter spike](butlaroo-adapter-spike.md) — Phase 7 UI overwrite candidate
 14. [F-Droid posture](fdroid.md) — metadata + reproducible build (publish deferred)
 15. [Release gate](release-gate.md) — pre-tag checklist
 16. [Release notes](release-notes.md)
