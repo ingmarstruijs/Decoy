@@ -31,17 +31,40 @@ After you finish, you return to the lab. A **Last result** card shows payment st
 2. Tap **Confirm stay (save vault)**
 3. Last result / vault line shows encrypted stay with pitch
 
-### D. Zone keypad
+### D. Parking zone 4021
+
+1. Tap **Start parking session** (or keypad chip **4021** → Resolve)
+2. Optionally consent + enter a plate (without consent, plate is omitted)
+3. **Pay & start parking** — session stays open
+4. **Stop parking & wipe** — Last result shows wipe; plate only in Kept if you consented
+
+### E. Captive portal Wi-Fi
+
+1. Tap **Start captive portal** (or chip **WIFI**)
+2. **Accept & connect**
+3. Last result: email aliased, marketing/account omitted, session wiped
+
+### F. EV charging
+
+1. Tap **Start EV charging** (or chip **EV1**)
+2. **Pay & start charging** → **Stop charging & wipe**
+
+### G. Vending / locker
+
+1. Tap **Start vending pay** (or chip **VEND1**)
+2. Pick an item → **Pay & dispense** → wipe
+
+### H. Zone keypad
 
 1. Tap chip **CAMP42** (or type it)
 2. Tap **Resolve zone code**
 3. Same as campsite order flow
 
-### E. Walk away
+### I. Walk away
 
-1. Start any order scenario
-2. Tap **Walk away — wipe without ordering**
-3. Session gone; no successful payment in Last result
+1. Start any order or timed scenario (before stop)
+2. Tap **Walk away**
+3. Session gone; no successful completed wipe from pay path
 
 ## adb (optional)
 

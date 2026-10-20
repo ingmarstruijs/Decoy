@@ -60,11 +60,20 @@ object FixtureCatalog {
     val injectedTerraceQr = TerraceOrderPlugin.FIXTURE_QR
     val injectedStayQr = CampsiteStayPlugin.FIXTURE_QR
     val injectedStayNfc = CampsiteStayPlugin.FIXTURE_NFC
+    val injectedParkingQr = ParkingSessionPlugin.FIXTURE_QR
+    val injectedParkingNfc = ParkingSessionPlugin.FIXTURE_NFC
+    val injectedPortalQr = CaptivePortalPlugin.FIXTURE_QR
+    val injectedEvQr = EvChargingPlugin.FIXTURE_QR
+    val injectedVendingQr = VendingPlugin.FIXTURE_QR
 
     fun allPlugins() = listOf(
         HelloFixturePlugin(),
         CampsiteOrderPlugin(),
         TerraceOrderPlugin(),
         CampsiteStayPlugin(),
+        ParkingSessionPlugin(),
+        CaptivePortalPlugin(),
+        EvChargingPlugin(),
+        VendingPlugin(),
     )
 }

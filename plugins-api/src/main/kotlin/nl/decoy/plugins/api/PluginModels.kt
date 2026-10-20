@@ -35,6 +35,9 @@ enum class FieldKind {
 
     /** Drop entirely (home address, marketing, forced account). */
     Omit,
+
+    /** Real value only if user explicitly consents (e.g. license plate). */
+    ConsentRequired,
 }
 
 data class FormField(
@@ -67,6 +70,21 @@ sealed class PluginUiState {
         val menu: List<MenuItem>,
         val fields: List<FormField>,
         val primaryActionLabel: String = "Pay & order",
+    ) : PluginUiState()
+
+    /**
+     * Timed One-shot activity: pay/start, remain active until stop, then wipe.
+     * Used for parking and EV charging.
+     */
+    data class TimedSession(
+        val title: String,
+        val subtitle: String,
+        val tariffLabel: String,
+        val amountCents: Int,
+        val fields: List<FormField> = emptyList(),
+        val startLabel: String = "Pay & start",
+        val stopLabel: String = "Stop session",
+        val activeHint: String = "Session running. Stop when finished to wipe.",
     ) : PluginUiState()
 
     data class Error(val message: String) : PluginUiState()

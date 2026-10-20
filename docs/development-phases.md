@@ -188,8 +188,8 @@ Manual keypad remains a shared trigger variant. Each case meets the acceptance c
 
 ### Exit criteria
 
-- [ ] All listed One-shot v1 cases have fixtures and green e2e checklists
-- [ ] Linked from [use-cases.md](use-cases.md)
+- [x] All listed One-shot v1 cases have fixtures and green e2e checklists
+- [x] Linked from [use-cases.md](use-cases.md)
 
 ---
 

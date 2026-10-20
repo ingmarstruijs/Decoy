@@ -21,7 +21,7 @@ class CampsiteOrderPlugin : CapabilityPlugin {
         is DiscoveryInput.Nfc ->
             input.payload == FIXTURE_NFC || input.payload.startsWith("decoy://campsite/order")
         is DiscoveryInput.ZoneCode ->
-            input.code.equals("CAMP42", ignoreCase = true) || input.code == "4021"
+            input.code.equals("CAMP42", ignoreCase = true)
         else -> false
     }
 
