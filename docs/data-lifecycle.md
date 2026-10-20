@@ -67,6 +67,20 @@ Transient relationships that need local memory across days.
 
 Full scenarios: [use-cases.md](use-cases.md).
 
+## Local history (minimal)
+
+After a context ends, Decoy may keep a **short local breadcrumb** so the home screen can show Recent (and so parking/orders are not invisible once the one-shot UI closes).
+
+| Rule | Detail |
+|------|--------|
+| Stored | Kind, short label (zone / stay id), retention class, end reason, timestamps |
+| Not stored | Payloads, receipts, plates, emails, vault ciphertext, full QR URLs |
+| Lifetime | Default TTL (days) + hard cap on entry count; user **Clear** wipes all |
+| Cloud | None |
+| Relation to retention | History is not the active session; One-shot wipe and Multi-day vault rules still apply |
+
+Active Multi-day stays remain in the vault list until **End** (user) or TTL. Ending a stay appends one history row, then deletes the vault record.
+
 ## Defaults (summary)
 
 - Nothing permanent in a Decoy-operated cloud
@@ -74,3 +88,4 @@ Full scenarios: [use-cases.md](use-cases.md).
 - User can opt out per context (pin/extend); never silent infinite retention
 - Prefer wipe-at-session-end over retain-just-in-case
 - Safety TTLs always bound abandoned sessions
+- Local history is optional breadcrumbs with TTL — never a permanent dossier

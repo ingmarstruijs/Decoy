@@ -11,6 +11,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -39,16 +40,22 @@ import androidx.compose.ui.unit.dp
 import nl.decoy.app.ui.theme.DecoyCopper
 import nl.decoy.app.ui.theme.DecoyInk
 import nl.decoy.app.ui.theme.DecoyInkLift
+import nl.decoy.core.retention.HistoryEndReason
+import nl.decoy.core.retention.HistoryEntry
+import nl.decoy.core.retention.HistoryRetentionClass
 import nl.decoy.core.retention.MultiDayRecord
 
 @Composable
 fun ProductHome(
     vaultRecords: List<MultiDayRecord>,
+    historyRecords: List<HistoryEntry>,
     statusLine: String?,
     showDemoEntry: Boolean,
     onScan: () -> Unit,
     onZoneOrLink: () -> Unit,
     onOpenDemo: () -> Unit,
+    onEndStay: (String) -> Unit,
+    onClearHistory: () -> Unit,
 ) {
     val infinite = rememberInfiniteTransition(label = "scanPulse")
     val pulse by infinite.animateFloat(
@@ -163,13 +170,62 @@ fun ProductHome(
                         .testTag("vault_section_title"),
                 )
                 Spacer(Modifier.height(8.dp))
-                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                     vaultRecords.forEach { record ->
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .testTag("vault_${record.id}"),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                        ) {
+                            Text(
+                                text = "${record.kind} · ${record.id}",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.weight(1f),
+                            )
+                            TextButton(
+                                onClick = { onEndStay(record.id) },
+                                modifier = Modifier.testTag("end_stay_${record.id}"),
+                            ) {
+                                Text("End")
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (historyRecords.isNotEmpty()) {
+                Spacer(Modifier.height(32.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                ) {
+                    Text(
+                        text = "Recent",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onBackground,
+                        modifier = Modifier.testTag("history_section_title"),
+                    )
+                    TextButton(
+                        onClick = onClearHistory,
+                        modifier = Modifier.testTag("clear_history"),
+                    ) {
+                        Text("Clear")
+                    }
+                }
+                Spacer(Modifier.height(4.dp))
+                Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                    historyRecords.forEach { entry ->
                         Text(
-                            text = "${record.kind} · ${record.id}",
-                            style = MaterialTheme.typography.bodyMedium,
+                            text = formatHistoryLine(entry),
+                            style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.testTag("vault_${record.id}"),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .testTag("history_${entry.id}"),
                         )
                     }
                 }
@@ -187,4 +243,17 @@ fun ProductHome(
             Spacer(Modifier.height(32.dp))
         }
     }
+}
+
+private fun formatHistoryLine(entry: HistoryEntry): String {
+    val retention = when (entry.retention) {
+        HistoryRetentionClass.OneShot -> "one-shot"
+        HistoryRetentionClass.MultiDay -> "stay"
+    }
+    val reason = when (entry.endReason) {
+        HistoryEndReason.Completed -> "done"
+        HistoryEndReason.Dismissed -> "dismissed"
+        HistoryEndReason.Ended -> "ended"
+    }
+    return "${entry.kind} · ${entry.label} · $retention · $reason"
 }

@@ -30,11 +30,13 @@ Debug builds also expose **Demo fixtures** (overflow on home) to inject discover
 1. Demo → Campsite stay / Cabin / Festival, or paste stay QR
 2. Confirm into vault
 3. Home shows **Active stays**
+4. Tap **End** → stay leaves Active stays and appears under **Recent**
 
 ### Timed (parking / EV)
 
 1. Start via Demo or scan/paste
 2. Pay & start → Stop when done (session wipes)
+3. Home **Recent** shows the parking breadcrumb (Clear wipes the list)
 
 ## Demo fixtures (debug only)
 

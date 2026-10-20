@@ -11,9 +11,11 @@ import nl.decoy.core.payment.PaymentBackend
 import nl.decoy.core.payment.PaymentBackends
 import nl.decoy.core.payment.SwitchingPaymentPort
 import nl.decoy.core.retention.AesGcmMultiDayVault
+import nl.decoy.core.retention.InMemorySessionHistoryStore
 import nl.decoy.core.retention.InMemorySessionStore
 import nl.decoy.core.retention.MultiDayService
 import nl.decoy.core.retention.RetentionController
+import nl.decoy.core.retention.SessionHistoryService
 import nl.decoy.fixtures.FixtureCatalog
 import nl.decoy.plugins.api.PluginRegistry
 
@@ -29,6 +31,8 @@ class DecoyApp : Application() {
     lateinit var lifecycle: SessionLifecycle
         private set
     lateinit var multiDay: MultiDayService
+        private set
+    lateinit var history: SessionHistoryService
         private set
     lateinit var zones: ZoneDirectory
         private set
@@ -59,6 +63,7 @@ class DecoyApp : Application() {
         )
         timedFlow = TimedSessionFlow(payments = payments)
         multiDay = MultiDayService(AesGcmMultiDayVault(AesGcmMultiDayVault.generateKey()))
+        history = SessionHistoryService(InMemorySessionHistoryStore())
         zones = ZoneDirectory()
     }
 

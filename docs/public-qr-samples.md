@@ -18,6 +18,10 @@ PNG files: [`fixtures/public-qr/`](../fixtures/public-qr/).
 2. Emulator: paste from the table in `fixtures/public-qr/README.md`
 3. Debug builds: **Demo fixtures** still inject without scanning
 
+## Real vendor QR (e.g. Butlaroo)
+
+You can scan a live venue QR today to exercise decode + Unresolved UX. A cooperative Butlaroo session is Phase 7 — see [butlaroo-adapter-spike.md](butlaroo-adapter-spike.md).
+
 ## Out of scope
 
 - Live vendor checkout from arbitrary public QR codes ([development-phases.md](development-phases.md) live API ladder)

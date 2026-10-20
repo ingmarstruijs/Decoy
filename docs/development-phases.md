@@ -42,7 +42,7 @@ flowchart TB
 | Fixtures / inject / Demo sheet | 0–6 | No (CI stubs) |
 | Scan/decode public QR → plugin or Unresolved | 6b | Decode local; vendor API **no** |
 | Real open-banking / Web Payments rail | 4b | Yes — payment only |
-| First venue/capability live adapter | 7 / M5 | Yes — per explicit plugin |
+| First venue/capability live adapter | 7 / M5 | Yes — per explicit plugin (candidate: Butlaroo) |
 | Arbitrary retail/parking without open adapter | — | **Out of scope** |
 
 ## Cross-cutting rules
@@ -350,13 +350,48 @@ Manual keypad remains a shared trigger variant. Each case meets the acceptance c
 
 ---
 
+## Phase 6c — Local history + end stay
+
+**Outcome:** home shows ended contexts briefly; users can end Multi-day stays without waiting for TTL.
+
+### Work
+
+- Minimal local `SessionHistory` (kind, label, retention class, end reason) — no payloads/PII
+- Product home **Recent** strip + **Clear**
+- **End** on active vault stays → vault delete + history row
+- Record history on One-shot complete / dismiss / stop timed (not on “confirm stay”)
+
+### Tests
+
+- Unit: TTL wipe, clear, max-entry cap
+- Manual: parking stop → Recent; stay End → leaves Active stays, appears in Recent
+
+### Non-goals
+
+- Cloud sync / analytics
+- Receipts, maps, or full audit logs
+- Durable disk history (in-memory OK for this phase; encrypted disk later if needed)
+
+### Exit criteria
+
+- [x] Recent list + Clear on product home
+- [x] End stay wired to `MultiDayService.end`
+- [x] Documented in [data-lifecycle.md](data-lifecycle.md)
+
+---
+
 ## Phase 7 — Live adapters + cooperative protocols
 
 **Outcome:** first live capability adapters and/or venues that speak Decoy-native claims.
 
+### Candidate: Butlaroo
+
+[Butlaroo](https://www.butlaroo.com/) (hospitality QR / charge-to-booking / PMS) is the **first named Phase 7 candidate**. Spike: [butlaroo-adapter-spike.md](butlaroo-adapter-spike.md) (menu → order → pay or charge-to-booking). Blocked on partner API access; real table QR codes stay **Unresolved** until an explicit plugin ships.
+
 ### Work
 
 - One cooperating venue or open protocol + explicit plugin (privacy-net on fetches)
+- **Butlaroo:** staging HTTP backend + fixture twin; host allowlist; no vendor WebView
 - Optional minimal capability-fetch for **known** hosts only
 - Venue claims such as `paid`, `pitch 42` instead of full PII forms where they cooperate
 - Optional cryptographic / ZKP-style verification **only** where verifiers cooperate
@@ -365,13 +400,13 @@ Manual keypad remains a shared trigger variant. Each case meets the acceptance c
 ### Non-goals
 
 - Required for first F-Droid-ready posture (M4)
-- Scraping private vendor apps
+- Scraping private vendor apps / guest WebViews
 - “Every QR on the street works”
 - Fabricating regulated identifiers
 
 ### Exit criteria
 
-- [ ] At least one live or cooperative adapter + protocol sketch
+- [ ] At least one live or cooperative adapter + protocol sketch ([butlaroo-adapter-spike.md](butlaroo-adapter-spike.md) started)
 - [ ] Threat model updated if guarantees change
 
 ---
@@ -386,6 +421,7 @@ Manual keypad remains a shared trigger variant. Each case meets the acceptance c
 | **M3** | 4 + 5 | Staging payments + Multi-day stays |
 | **M4** | 6 | F-Droid-ready posture (publish may be deferred) |
 | **M4b** | 6b | Product shell + public QR scan/Unresolved |
+| **M4c** | 6c | Local history + end stay |
 | **M5** | 4b and/or 7 | First live payment and/or first live venue adapter |
 
 ## Related docs
@@ -396,4 +432,5 @@ Manual keypad remains a shared trigger variant. Each case meets the acceptance c
 - [End-to-end testability](e2e-testability.md)
 - [Threat model](threat-model.md)
 - [Data lifecycle](data-lifecycle.md)
+- [Butlaroo adapter spike](butlaroo-adapter-spike.md)
 - [Non-goals](non-goals.md)

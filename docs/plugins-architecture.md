@@ -57,7 +57,10 @@ Every plugin **must** run against fake/stub backends and fixtures so the full fl
 
 Live vendor/capability HTTP adapters arrive in **Phase 7** (explicit plugin + privacy-net). Until then, unknown public QR codes stay on the Unresolved screen — see the live API ladder in [development-phases.md](development-phases.md).
 
+**Candidate adapter:** Butlaroo — spike sketch in [butlaroo-adapter-spike.md](butlaroo-adapter-spike.md).
+
 ## Related docs
 
 - [Product spec](product-spec.md)
 - [Threat model](threat-model.md)
+- [Butlaroo adapter spike](butlaroo-adapter-spike.md)

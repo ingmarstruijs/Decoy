@@ -26,6 +26,7 @@ import nl.decoy.app.ui.theme.DecoyInk
 import nl.decoy.app.ui.theme.DecoyInkLift
 import nl.decoy.app.ui.unresolved.UnresolvedContextScreen
 import nl.decoy.core.ResolvedSession
+import nl.decoy.core.retention.HistoryEntry
 import nl.decoy.core.retention.MultiDayRecord
 import nl.decoy.plugins.api.MenuItem
 import nl.decoy.plugins.api.PluginUiState
@@ -41,6 +42,7 @@ fun DecoyAppScreen(
     session: ResolvedSession?,
     unresolvedPayload: String?,
     vaultRecords: List<MultiDayRecord>,
+    historyRecords: List<HistoryEntry>,
     statusLine: String?,
     showDemoEntry: Boolean,
     demoActions: DemoActions,
@@ -50,6 +52,8 @@ fun DecoyAppScreen(
     onStartTimed: (Map<String, String>) -> Boolean,
     onStopTimed: () -> Unit,
     onConfirmStay: () -> Unit,
+    onEndStay: (String) -> Unit,
+    onClearHistory: () -> Unit,
     onCompleteSimple: () -> Unit,
     onWalkAway: () -> Unit,
     onDismiss: () -> Unit,
@@ -132,11 +136,14 @@ fun DecoyAppScreen(
             else -> {
                 ProductHome(
                     vaultRecords = vaultRecords,
+                    historyRecords = historyRecords,
                     statusLine = statusLine,
                     showDemoEntry = showDemoEntry,
                     onScan = { route = ShellRoute.Scanning },
                     onZoneOrLink = { showZoneSheet = true },
                     onOpenDemo = { showDemo = true },
+                    onEndStay = onEndStay,
+                    onClearHistory = onClearHistory,
                 )
             }
         }
