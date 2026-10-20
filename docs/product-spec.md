@@ -18,6 +18,7 @@ Interacting with the physical world increasingly requires a unique vendor app, a
 - No Decoy cloud account; no GPS upload to Decoy or adtech
 - No stable device IDs sent to counterparties
 - Distributed via F-Droid with zero Play Services / Firebase dependency
+- Every v1 flow is fully testable on an Android emulator with mocks/stubs (no production vendor hosts or physical NFC/UWB required) — see [e2e-testability.md](e2e-testability.md)
 
 ## Platform
 
@@ -104,10 +105,6 @@ Fabricating government IDs, license plates, or banking credentials. See [non-goa
 - Prefer open W3C Web Payments and open-banking relays
 - Counterparty must not receive name or bank account number via Decoy-filled forms
 - Residual linkability via PSP/bank is documented in [threat-model.md](threat-model.md)
-
-## Present wallet (reverse direction)
-
-Decoy also holds user-owned tokens to *show* (discount codes, tickets)—see [use-cases.md](use-cases.md). Import is user-initiated via share sheet / open-with only.
 
 ## Retention
 

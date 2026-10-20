@@ -5,8 +5,7 @@ This document is a product privacy model, not legal advice.
 ## Assets
 
 - User PII (email, phone, address, plate, payment instruments)
-- Present-wallet tokens (tickets, discount codes)
-- Multi-day local contexts (pitch, access tokens)
+- Multi-day local contexts (pitch, access tokens, event pass credentials)
 - Device sensors (GPS, BLE, camera) used only for local resolution
 
 ## Adversaries
@@ -94,7 +93,6 @@ Never read for product logic, never send to counterparties, never log:
 
 - **Ephemeral session nonce** (128+ bit) per context; destroyed on wipe
 - **Per-counterparty alias** — no global Decoy user id
-- **Present-wallet** local row IDs — not exported unless the ticket token requires it
 - **Multi-day** encrypted local records keyed by random id — never uploaded
 
 ### Engineering guards

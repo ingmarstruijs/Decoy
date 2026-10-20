@@ -6,23 +6,22 @@ Decoy core resolves context and hosts UI. **Capability plugins** implement venue
 
 | Layer | Responsibility |
 |-------|----------------|
-| Core | Inputs, context resolver, Compose shell, retention, identity field policy, payment orchestration, Present wallet shell, privacy HTTP defaults |
+| Core | Inputs, context resolver, Compose shell, retention, identity field policy, payment orchestration, privacy HTTP defaults |
 | Plugins | Know a venue/protocol: parse payloads, fetch capabilities, map fields, drive flow to completion |
 
 Plugin kinds (logical):
 
-- **Input helpers** — specialized parsers (e.g. a pass format)
+- **Input helpers** — specialized parsers
 - **Venue / protocol** — campsite menu, parking zone, bike lock API
 - **Payment adapters** — Web Payments / open-banking relays
 - **Identity helpers** — alias providers
-- **Present importers** — `.pkpass`, PDF ticket extractors
 
 ## Lifecycle
 
-1. **Discover** — QR / NFC / URL / zone / BLE / share import
-2. **Resolve** — Context resolver selects plugin (or Present wallet)
+1. **Discover** — QR / NFC / URL / zone / BLE
+2. **Resolve** — Context resolver selects plugin
 3. **Render** — Plugin supplies state; core renders Compose UI
-4. **Complete** — Pay / unlock / order / present
+4. **Complete** — Pay / unlock / order
 5. **Dispose** — One-shot wipe or Multi-day persist with TTL
 
 ```mermaid
@@ -34,8 +33,6 @@ flowchart LR
   Plugin --> Pay[AnonymousPayments]
   Plugin --> Retention[OneShot_or_MultiDay]
 ```
-
-Share-import flows skip venue resolve and enter **Present wallet** directly (see [use-cases.md](use-cases.md)).
 
 ## Isolation rules
 
@@ -54,13 +51,9 @@ Share-import flows skip venue resolve and enter **Present wallet** directly (see
 
 Long-term preference: cooperative open protocols so vendors request claims (`paid`, `pitch 42`) instead of full PII forms.
 
-## Present wallet plugins
-
-Importers run only on user-initiated share / open-with / SAF / clipboard. They extract a presentable token into local storage. They never scrape other apps’ private data.
-
 ## Testing hooks
 
-Every plugin should run against fake/stub backends and fixtures so e2e tests do not need live surveillance vendors. See [e2e-testability.md](e2e-testability.md).
+Every plugin **must** run against fake/stub backends and fixtures so the full flow works on an **emulator** without live surveillance vendors or physical tags. Input ports (QR, NFC, BLE) must accept injection. See [e2e-testability.md](e2e-testability.md).
 
 ## Related docs
 

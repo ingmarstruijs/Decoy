@@ -9,8 +9,8 @@ Decoy deliberately does **not** aim to be:
 | A vendor SaaS / hosted Decoy cloud | Local-first; no permanent cloud accounts for core product |
 | Play Services / Firebase dependent | F-Droid and FOSS purity |
 | A fake-ID toolkit | No fabricating plates, government IDs, or banking credentials to evade law or enforcement |
-| Silent scrapers of other apps | Ticket/code import is user-initiated share / open-with only |
-| Permanent cloud sync for wallets | Present-wallet items stay on-device by default |
+| A generic ticket / loyalty import-and-show wallet | Already well covered by existing apps; Decoy focuses on venue UI overwrite and PII field policy |
+| A scraper of other apps | No reading other apps’ sandboxes or embedding their SDKs |
 | A replacement for every regulated identity flow | When the law requires a real identifier, Decoy asks consent and sends the real value |
 
 If a feature needs one of the above to “work,” redesign the feature—or put it out of scope.

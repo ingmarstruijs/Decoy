@@ -2,7 +2,7 @@
 
 Each v1 case lists actor, trigger, flow, retention, PII policy, and privacy outcome.
 
-Retention terms: **One-shot**, **Multi-day**, or Present-wallet rules ([data-lifecycle.md](data-lifecycle.md)).
+Retention terms: **One-shot** or **Multi-day** ([data-lifecycle.md](data-lifecycle.md)).
 
 ---
 
@@ -121,53 +121,12 @@ When no tag is present, the user enters a zone or short code. Same retention and
 |--|--|
 | **Actor** | Attendee |
 | **Trigger** | NFC / QR pass; top-ups |
-| **Flow** | Local pass wallet for event window; re-entry without re-account |
+| **Flow** | Local pass context for event window; re-entry / top-up without re-account |
 | **Retention** | Multi-day (event-bounded) |
-| **PII policy** | Present token only; strip vendor app bloat |
+| **PII policy** | Pass credential local only; strip vendor app bloat |
 | **Privacy outcome** | Event access without permanent festival account |
 
----
-
-## Present — reverse direction (v1)
-
-Opposite of venue discovery: the user presents a token *to* the world.
-
-### Discount / loyalty codes
-
-| | |
-|--|--|
-| **Actor** | Shopper |
-| **Trigger** | User opens Present wallet |
-| **Flow** | Pick code → fullscreen QR/barcode/text → cashier scans |
-| **Retention** | Keep until delete (reusable) |
-| **PII policy** | Store presentable token only; no lottery/loyalty app; no cloud sync by default |
-| **Privacy outcome** | Show VriendenLoterij-style or store codes without tracker-heavy apps |
-| **Example** | Reusable discount codes shown often at checkout |
-
-### Ticket wallet
-
-| | |
-|--|--|
-| **Actor** | Traveler / attendee |
-| **Trigger** | User opens ticket; or import then present at gate |
-| **Flow** | Import → store locally → fullscreen present offline → wipe after event + grace |
-| **Retention** | Event-bounded Multi-day |
-| **PII policy** | Presentable ticket payload only |
-| **Privacy outcome** | One wallet for train/event/cinema tickets without each vendor app |
-
-#### Import from other apps (required)
-
-User-initiated only. Decoy is a share target and file handler—never scrapes another app’s sandbox.
-
-| Path | Examples |
-|------|----------|
-| Share sheet (`SEND` / `VIEW`) | PDF, QR screenshot, text code, link |
-| Open-with | `.pkpass`, PDF, barcode images |
-| SAF picker | Downloads, email attachments |
-| Camera / gallery | Re-scan QR on screen or photo |
-| Clipboard | Paste code or URL |
-
-**Non-goal:** silent import from Google/Samsung Wallet; Play-only Wallet APIs; embedding each vendor SDK.
+Generic ticket or loyalty **import-and-show** wallets are out of scope — see [non-goals.md](non-goals.md).
 
 ---
 

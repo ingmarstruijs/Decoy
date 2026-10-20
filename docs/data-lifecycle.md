@@ -1,6 +1,6 @@
 # Data lifecycle
 
-Decoy never keeps interaction data permanently in a Decoy cloud. Retention is local and classified as **One-shot** or **Multi-day** (plus a Present-wallet variant for reusable codes).
+Decoy never keeps interaction data permanently in a Decoy cloud. Retention is local and classified as **One-shot** or **Multi-day**.
 
 ## One-shot
 
@@ -30,25 +30,12 @@ Transient relationships that need local memory for a bounded window.
 | Cloud | None by default |
 | Local IDs | Random row keys; never uploaded as a Decoy user id |
 
-## Present wallet
-
-Reverse-direction items the user chooses to keep for showing at checkout or gates.
-
-| Kind | Retention |
-|------|-----------|
-| Discount / loyalty codes | Multi-day or **keep until I delete** (reusable) |
-| Tickets | Until event end + short grace, then wipe |
-
-Tokens are presentable payloads only; no Decoy-cloud sync by default.
-
 ## Mapping (summary)
 
 | Use case class | Retention |
 |----------------|-----------|
 | Bike / terrace / parking / captive Wi-Fi / EV / vending | One-shot |
 | Campsite stay / apartment / festival pass | Multi-day |
-| Loyalty codes | Keep until delete |
-| Tickets | Event-bounded Multi-day |
 
 Full scenarios: [use-cases.md](use-cases.md).
 
