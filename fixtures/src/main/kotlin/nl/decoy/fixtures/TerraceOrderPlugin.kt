@@ -18,6 +18,8 @@ class TerraceOrderPlugin : CapabilityPlugin {
     override fun matches(input: DiscoveryInput): Boolean = when (input) {
         is DiscoveryInput.Qr -> input.payload == FIXTURE_QR || input.payload.startsWith("decoy://terrace/table")
         is DiscoveryInput.Url -> input.url.contains("terrace") && input.url.contains("table")
+        is DiscoveryInput.Nfc -> input.payload.startsWith("decoy://terrace/table")
+        is DiscoveryInput.ZoneCode -> input.code.equals("T7", ignoreCase = true)
         else -> false
     }
 

@@ -42,11 +42,15 @@ adb shell am start -n nl.decoy.app.debug/nl.decoy.app.MainActivity -a nl.decoy.a
 
 # Phase 0 hello
 adb shell am start -n nl.decoy.app.debug/nl.decoy.app.MainActivity -a nl.decoy.app.INJECT_QR --es nl.decoy.app.extra.QR_PAYLOAD "decoy://hello?fixture=1"
+
+# Phase 2 — NFC / zone keypad (no hardware)
+adb shell am start -n nl.decoy.app.debug/nl.decoy.app.MainActivity --es nl.decoy.app.extra.NFC_PAYLOAD "decoy://campsite/order?nfc=1"
+adb shell am start -n nl.decoy.app.debug/nl.decoy.app.MainActivity --es nl.decoy.app.extra.ZONE_CODE "STAY42"
 ```
 
-Or open the app and tap **Inject campsite order QR** / **Inject terrace table QR**.
+Or use the in-app **Debug test lab** (scenario cards). Step-by-step: [manual-test-lab.md](manual-test-lab.md).
 
-3. Pick a menu item → **Pay & order** (fake payment) → session wiped. Confirm IBAN/home are shown as blocked/omitted, not collected.
+3. Follow the on-screen **Next** hint. Orders: **Pay & order** → wipe. Stay: **Confirm stay** → vault. **Walk away** wipes without finishing.
 
 ## Modules
 

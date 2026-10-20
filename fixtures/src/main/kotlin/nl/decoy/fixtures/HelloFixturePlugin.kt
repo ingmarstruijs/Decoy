@@ -56,11 +56,15 @@ class HelloFixturePlugin : CapabilityPlugin {
 object FixtureCatalog {
     val injectedHelloQr = HelloFixturePlugin.FIXTURE_QR
     val injectedCampsiteQr = CampsiteOrderPlugin.FIXTURE_QR
+    val injectedCampsiteNfc = CampsiteOrderPlugin.FIXTURE_NFC
     val injectedTerraceQr = TerraceOrderPlugin.FIXTURE_QR
+    val injectedStayQr = CampsiteStayPlugin.FIXTURE_QR
+    val injectedStayNfc = CampsiteStayPlugin.FIXTURE_NFC
 
     fun allPlugins() = listOf(
         HelloFixturePlugin(),
         CampsiteOrderPlugin(),
         TerraceOrderPlugin(),
+        CampsiteStayPlugin(),
     )
 }
