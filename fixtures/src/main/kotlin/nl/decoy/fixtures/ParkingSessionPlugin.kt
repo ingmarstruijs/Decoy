@@ -26,7 +26,10 @@ class ParkingSessionPlugin : CapabilityPlugin {
             input.payload == FIXTURE_NFC || input.payload.startsWith("decoy://parking/")
         is DiscoveryInput.ZoneCode ->
             input.code == "4021" || input.code.equals("PARK4021", ignoreCase = true)
-        else -> false
+        is DiscoveryInput.Ble ->
+            AmbientFixtures.matchesAmbient(input.advertisement, "parking")
+        is DiscoveryInput.Uwb ->
+            AmbientFixtures.matchesAmbient(input.advertisement, "parking")
     }
 
     override fun resolve(input: DiscoveryInput): PluginContext {
@@ -37,6 +40,8 @@ class ParkingSessionPlugin : CapabilityPlugin {
                     is DiscoveryInput.Qr -> input.payload
                     is DiscoveryInput.Url -> input.url
                     is DiscoveryInput.Nfc -> input.payload
+                    is DiscoveryInput.Ble -> input.advertisement
+                    is DiscoveryInput.Uwb -> input.advertisement
                     else -> "4021"
                 },
             )?.groupValues?.getOrNull(1) ?: "4021"

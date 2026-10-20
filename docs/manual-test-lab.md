@@ -64,13 +64,25 @@ CI always uses **fake**. In the lab, tap **Switch payment backend** to use the *
 1. Tap **Start vending pay** (or chip **VEND1**)
 2. Pick an item → **Pay & dispense** → wipe
 
-### H. Zone keypad
+### H. Cabin / festival Multi-day
+
+1. Tap **Start cabin stay** or **Start festival pass**
+2. Confirm into vault
+3. Vault line shows kind + payload; UI session ends
+
+### I. Ambient BLE / UWB
+
+1. Tap **Fake BLE: campsite order** (or stay / Wi-Fi)
+2. Same flows as QR — discovery channel only differs
+3. Optional: **Fake UWB: campsite order** (same contract as BLE)
+
+### J. Zone keypad
 
 1. Tap chip **CAMP42** (or type it)
 2. Tap **Resolve zone code**
 3. Same as campsite order flow
 
-### I. Walk away
+### K. Walk away
 
 1. Start any order or timed scenario (before stop)
 2. Tap **Walk away**

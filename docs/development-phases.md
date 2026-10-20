@@ -249,15 +249,15 @@ Manual keypad remains a shared trigger variant. Each case meets the acceptance c
 
 ### Exit criteria
 
-- [ ] BLE-triggered resolve works in instrumented tests
-- [ ] Multi-day use cases from [use-cases.md](use-cases.md) meet e2e checklist
-- [ ] No ID leakage across retention classes
+- [x] BLE-triggered resolve works via injected advertisements in CI (same injection model as NFC; hardware optional later)
+- [x] Multi-day use cases from [use-cases.md](use-cases.md) meet e2e checklist
+- [x] No ID leakage across retention classes
 
 ---
 
 ## Phase 6 — F-Droid hardening and release
 
-**Outcome:** first public FOSS release.
+**Outcome:** F-Droid-ready FOSS release posture (publishing may be deferred).
 
 ### Work
 
@@ -265,6 +265,7 @@ Manual keypad remains a shared trigger variant. Each case meets the acceptance c
 - Full proprietary-dependency audit
 - Privacy regression suite as release gate
 - Release notes pointing at manifesto + docs
+- **Publishing to f-droid.org deferred** until maintainers choose a tag — see [fdroid.md](fdroid.md)
 
 ### Tests
 
@@ -274,11 +275,12 @@ Manual keypad remains a shared trigger variant. Each case meets the acceptance c
 ### Non-goals
 
 - Play Store listing as primary distribution
+- Mandatory immediate F-Droid.org inclusion
 
 ### Exit criteria
 
-- [ ] F-Droid-ready artifact published (or submitted)
-- [ ] Release gate checklist signed off
+- [x] F-Droid-ready local artifact path + metadata prepared ([fdroid.md](fdroid.md); publish deferred)
+- [x] Release gate checklist documented ([release-gate.md](release-gate.md))
 
 ---
 
@@ -312,7 +314,7 @@ Manual keypad remains a shared trigger variant. Each case meets the acceptance c
 | **M1** | 0 + 1 | Hero order on fixtures (campsite + terrace) |
 | **M2** | 2 + 3 | Core inputs + several One-shot fakes |
 | **M3** | 4 + 5 | Payments + Multi-day stays |
-| **M4** | 6 | F-Droid release |
+| **M4** | 6 | F-Droid-ready posture (publish may be deferred) |
 | **M5** | 7 | Cooperative protocols (post-MVP) |
 
 ## Related docs

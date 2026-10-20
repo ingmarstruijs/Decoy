@@ -50,6 +50,12 @@ adb shell am start -n nl.decoy.app.debug/nl.decoy.app.MainActivity --es nl.decoy
 # Phase 4 — staging open-banking relay (still no production PSP), then campsite order
 adb shell am start -n nl.decoy.app.debug/nl.decoy.app.MainActivity --es nl.decoy.app.extra.PAYMENT_BACKEND staging --es nl.decoy.app.extra.QR_PAYLOAD "decoy://campsite/order?fixture=1"
 
+# Phase 5 — ambient BLE / UWB inject (no radio hardware)
+adb shell am start -n nl.decoy.app.debug/nl.decoy.app.MainActivity --es nl.decoy.app.extra.BLE_AD "decoy|ble|campsite.order|fixture=1"
+adb shell am start -n nl.decoy.app.debug/nl.decoy.app.MainActivity --es nl.decoy.app.extra.UWB_AD "decoy|uwb|campsite.order|fixture=1"
+adb shell am start -n nl.decoy.app.debug/nl.decoy.app.MainActivity --es nl.decoy.app.extra.QR_PAYLOAD "decoy://cabin/unit=3?fixture=1"
+adb shell am start -n nl.decoy.app.debug/nl.decoy.app.MainActivity --es nl.decoy.app.extra.ZONE_CODE "PASS1"
+
 # Phase 3 — One-shot catalog
 adb shell am start -n nl.decoy.app.debug/nl.decoy.app.MainActivity --es nl.decoy.app.extra.QR_PAYLOAD "decoy://parking/zone=4021?fixture=1"
 adb shell am start -n nl.decoy.app.debug/nl.decoy.app.MainActivity --es nl.decoy.app.extra.ZONE_CODE "4021"

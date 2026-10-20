@@ -15,7 +15,10 @@ Specs and architecture for Decoy. The manifesto lives in the root [README](../RE
 9. [Payments](payments.md) — Fake vs staging open-banking relay; IBAN-out-of-band invariant
 10. [Dev setup](dev-setup.md) — build, tests, emulator smoke
 11. [Manual test lab](manual-test-lab.md) — how to use the debug scenario screen
-12. [Branching](branching.md) — protected `main`, feature branches, PRs
+12. [F-Droid posture](fdroid.md) — metadata + reproducible build (publish deferred)
+13. [Release gate](release-gate.md) — pre-tag checklist
+14. [Release notes](release-notes.md)
+15. [Branching](branching.md) — protected `main`, feature branches, PRs
 
 ## Conventions
 

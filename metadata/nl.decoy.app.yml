@@ -1,0 +1,41 @@
+# F-Droid metadata draft for Decoy.
+# This prepares a reproducible build posture. Submission / publishing is deferred
+# (see docs/fdroid.md and docs/release-gate.md).
+Categories:
+  - Security
+  - Internet
+License: GPL-3.0-or-later
+AuthorName: Decoy contributors
+WebSite: https://github.com/ingmarstruijs/Decoy
+SourceCode: https://github.com/ingmarstruijs/Decoy
+IssueTracker: https://github.com/ingmarstruijs/Decoy/issues
+Changelog: https://github.com/ingmarstruijs/Decoy/blob/main/docs/release-notes.md
+
+AutoName: Decoy
+Name: Decoy
+Summary: FOSS privacy layer for physical-world services
+Description: |-
+  Decoy is a free, local-first Android privacy layer for physical-world services
+  (campsite orders, parking, captive Wi-Fi, EV charging, Multi-day stays).
+  It resolves QR/NFC/BLE/zone inputs into Compose UI, applies field policy
+  (alias / omit / pay elsewhere), and pays out-of-band. No Play Services,
+  Firebase, or advertising IDs.
+
+RepoType: git
+Repo: https://github.com/ingmarstruijs/Decoy.git
+
+Builds:
+  - versionName: 0.1.0
+    versionCode: 1
+    commit: REPLACE_WITH_RELEASE_TAG
+    subdir: .
+    gradle:
+      - yes
+    output: app/build/outputs/apk/release/app-release-unsigned.apk
+
+AllowedAPKSigningKeys: []
+
+AutoUpdateMode: None
+UpdateCheckMode: Tags
+CurrentVersion: 0.1.0
+CurrentVersionCode: 1

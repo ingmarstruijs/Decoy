@@ -22,7 +22,10 @@ class CampsiteOrderPlugin : CapabilityPlugin {
             input.payload == FIXTURE_NFC || input.payload.startsWith("decoy://campsite/order")
         is DiscoveryInput.ZoneCode ->
             input.code.equals("CAMP42", ignoreCase = true)
-        else -> false
+        is DiscoveryInput.Ble ->
+            AmbientFixtures.matchesAmbient(input.advertisement, "campsite.order")
+        is DiscoveryInput.Uwb ->
+            AmbientFixtures.matchesAmbient(input.advertisement, "campsite.order")
     }
 
     override fun resolve(input: DiscoveryInput): PluginContext = PluginContext(

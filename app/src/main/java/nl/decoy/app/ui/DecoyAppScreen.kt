@@ -54,6 +54,12 @@ fun DecoyAppScreen(
     onInjectPortalQr: () -> Unit,
     onInjectEvQr: () -> Unit,
     onInjectVendingQr: () -> Unit,
+    onInjectCabinQr: () -> Unit,
+    onInjectFestivalQr: () -> Unit,
+    onInjectBleCampsite: () -> Unit,
+    onInjectBleStay: () -> Unit,
+    onInjectBlePortal: () -> Unit,
+    onInjectUwbCampsite: () -> Unit,
     onSubmitZone: (String) -> Unit,
     onPlaceOrder: (MenuItem, Map<String, String>) -> Unit,
     onStartTimed: (Map<String, String>) -> Boolean,
@@ -92,6 +98,12 @@ fun DecoyAppScreen(
                 onInjectPortalQr = onInjectPortalQr,
                 onInjectEvQr = onInjectEvQr,
                 onInjectVendingQr = onInjectVendingQr,
+                onInjectCabinQr = onInjectCabinQr,
+                onInjectFestivalQr = onInjectFestivalQr,
+                onInjectBleCampsite = onInjectBleCampsite,
+                onInjectBleStay = onInjectBleStay,
+                onInjectBlePortal = onInjectBlePortal,
+                onInjectUwbCampsite = onInjectUwbCampsite,
                 onSubmitZone = onSubmitZone,
             )
         } else {
@@ -113,7 +125,7 @@ fun DecoyAppScreen(
                     val isStay = session.context.attributes["retention"] == "multi-day"
                     Text(
                         text = if (isStay) {
-                            "Next: tap Confirm stay — pitch goes into the encrypted Multi-day vault, then this session ends."
+                            "Next: confirm into the encrypted Multi-day vault, then this UI session ends."
                         } else {
                             "Next: tap the primary action, or Walk away to wipe without finishing."
                         },
@@ -198,6 +210,12 @@ private fun DebugHome(
     onInjectPortalQr: () -> Unit,
     onInjectEvQr: () -> Unit,
     onInjectVendingQr: () -> Unit,
+    onInjectCabinQr: () -> Unit,
+    onInjectFestivalQr: () -> Unit,
+    onInjectBleCampsite: () -> Unit,
+    onInjectBleStay: () -> Unit,
+    onInjectBlePortal: () -> Unit,
+    onInjectUwbCampsite: () -> Unit,
     onSubmitZone: (String) -> Unit,
 ) {
     var zoneCode by remember { mutableStateOf("") }
@@ -341,7 +359,45 @@ private fun DebugHome(
         onClick = onInjectVendingQr,
     )
     ScenarioCard(
-        title = "8. NFC instead of QR",
+        title = "8. Cabin short-stay (Multi-day)",
+        goal = "Local door/access context without host surveillance app.",
+        steps = "Simulates cabin QR → Confirm → vault holds unit token.",
+        buttonLabel = "Start cabin stay",
+        testTag = "inject_cabin_qr",
+        onClick = onInjectCabinQr,
+    )
+    ScenarioCard(
+        title = "9. Festival / venue pass (Multi-day)",
+        goal = "Event-bounded pass without permanent festival account.",
+        steps = "Simulates pass QR → Activate → vault; TTL wipe after event window.",
+        buttonLabel = "Start festival pass",
+        testTag = "inject_festival_qr",
+        onClick = onInjectFestivalQr,
+    )
+    ScenarioCard(
+        title = "10. Ambient BLE / UWB (no radio)",
+        goal = "Proximity discovery from injected advertisements — local only, never cloud geo.",
+        steps = "Fakes BLE/UWB ads the same way as NFC inject.",
+        buttonLabel = "Fake BLE: campsite order",
+        testTag = "inject_ble_campsite",
+        onClick = onInjectBleCampsite,
+        secondaryLabel = "Fake BLE: campsite stay",
+        secondaryTag = "inject_ble_stay",
+        onSecondary = onInjectBleStay,
+    )
+    ScenarioCard(
+        title = "10b. More ambient",
+        goal = "Portal beacon + UWB same contract as BLE.",
+        steps = "Verify captive portal via BLE and campsite via UWB.",
+        buttonLabel = "Fake BLE: guest Wi-Fi",
+        testTag = "inject_ble_portal",
+        onClick = onInjectBlePortal,
+        secondaryLabel = "Fake UWB: campsite order",
+        secondaryTag = "inject_uwb_campsite",
+        onSecondary = onInjectUwbCampsite,
+    )
+    ScenarioCard(
+        title = "11. NFC instead of QR",
         goal = "Same plugins, different input channel (still faked).",
         steps = "Use when you want to verify NFC discovery without hardware.",
         buttonLabel = "Fake NFC: campsite order",
@@ -357,14 +413,16 @@ private fun DebugHome(
         modifier = Modifier.fillMaxWidth(),
     ) {
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            Text("9. Zone keypad (no tag)", style = MaterialTheme.typography.titleSmall)
+            Text("12. Zone keypad (no tag)", style = MaterialTheme.typography.titleSmall)
             Text(
                 text = "Type a short code as if it were painted on a pillar. Tap a chip to fill, then Resolve.",
                 style = MaterialTheme.typography.bodySmall,
             )
             @OptIn(ExperimentalLayoutApi::class)
             FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                listOf("CAMP42", "STAY42", "T7", "4021", "WIFI", "EV1", "VEND1").forEach { code ->
+                listOf(
+                    "CAMP42", "STAY42", "T7", "4021", "WIFI", "EV1", "VEND1", "CABIN3", "PASS1",
+                ).forEach { code ->
                     OutlinedButton(
                         onClick = { zoneCode = code },
                         modifier = Modifier.testTag("chip_$code"),

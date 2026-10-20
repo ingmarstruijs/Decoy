@@ -24,6 +24,9 @@ class ZoneDirectory(
             "WIFI" to DiscoveryInput.Qr("decoy://portal/guest?fixture=1&via=keypad"),
             "EV1" to DiscoveryInput.Qr("decoy://ev/charger=EV-1?fixture=1&via=keypad"),
             "VEND1" to DiscoveryInput.Qr("decoy://vending/locker=A3?fixture=1&via=keypad"),
+            "CABIN3" to DiscoveryInput.Qr("decoy://cabin/unit=3?fixture=1&via=keypad"),
+            "PASS1" to DiscoveryInput.Qr("decoy://festival/pass?event=FX26&fixture=1&via=keypad"),
+            "FX26" to DiscoveryInput.Qr("decoy://festival/pass?event=FX26&fixture=1&via=keypad"),
         )
     }
 }

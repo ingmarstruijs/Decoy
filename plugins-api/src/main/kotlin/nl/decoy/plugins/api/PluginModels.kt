@@ -8,7 +8,10 @@ sealed class DiscoveryInput {
     data class Url(val url: String) : DiscoveryInput()
     data class Nfc(val payload: String) : DiscoveryInput()
     data class ZoneCode(val code: String) : DiscoveryInput()
+    /** Local BLE advertisement payload (never uploaded as location telemetry). */
     data class Ble(val advertisement: String) : DiscoveryInput()
+    /** UWB ranging payload — same UX/plugin contract as [Ble]. */
+    data class Uwb(val advertisement: String) : DiscoveryInput()
 }
 
 /**

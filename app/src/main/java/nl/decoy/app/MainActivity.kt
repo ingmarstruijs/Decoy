@@ -83,6 +83,24 @@ class MainActivity : ComponentActivity() {
                         onInjectVendingQr = {
                             resolve(DiscoveryInput.Qr(FixtureCatalog.injectedVendingQr))
                         },
+                        onInjectCabinQr = {
+                            resolve(DiscoveryInput.Qr(FixtureCatalog.injectedCabinQr))
+                        },
+                        onInjectFestivalQr = {
+                            resolve(DiscoveryInput.Qr(FixtureCatalog.injectedFestivalQr))
+                        },
+                        onInjectBleCampsite = {
+                            resolve(DiscoveryInput.Ble(FixtureCatalog.injectedBleCampsiteOrder))
+                        },
+                        onInjectBleStay = {
+                            resolve(DiscoveryInput.Ble(FixtureCatalog.injectedBleStay))
+                        },
+                        onInjectBlePortal = {
+                            resolve(DiscoveryInput.Ble(FixtureCatalog.injectedBlePortal))
+                        },
+                        onInjectUwbCampsite = {
+                            resolve(DiscoveryInput.Uwb(FixtureCatalog.injectedUwbCampsiteOrder))
+                        },
                         onSubmitZone = { code ->
                             val mapped = app.zones.resolve(code)
                                 ?: DiscoveryInput.ZoneCode(code.trim())
@@ -115,13 +133,16 @@ class MainActivity : ComponentActivity() {
                         onConfirmStay = {
                             val current = session ?: return@DecoyAppScreen
                             val stayId = current.context.attributes["stayId"] ?: current.context.contextId
-                            val pitch = current.context.attributes["pitch"] ?: "?"
+                            val kind = current.context.attributes["kind"] ?: "campsite"
+                            val payload = current.context.attributes["vaultPayload"]
+                                ?: """{"pitch":"${current.context.attributes["pitch"] ?: "?"}"}"""
                             app.multiDay.startStay(
                                 id = stayId,
-                                kind = "campsite",
-                                payload = """{"pitch":"$pitch"}""",
+                                kind = kind,
+                                payload = payload,
                             )
-                            vaultStatus = "Vault: stay $stayId pitch=$pitch (encrypted, Multi-day TTL)"
+                            vaultStatus =
+                                "Vault: $kind $stayId (encrypted, Multi-day TTL) payload=$payload"
                             app.lifecycle.dispose(current, DisposeReason.Completed, success = true)
                             session = null
                         },
@@ -169,6 +190,10 @@ class MainActivity : ComponentActivity() {
             val mapped = app.zones.resolve(zone) ?: DiscoveryInput.ZoneCode(zone)
             return app.resolver.resolve(mapped)
         }
+        val ble = intent?.getStringExtra(EXTRA_BLE_AD)
+        if (ble != null) return app.resolver.resolve(DiscoveryInput.Ble(ble))
+        val uwb = intent?.getStringExtra(EXTRA_UWB_AD)
+        if (uwb != null) return app.resolver.resolve(DiscoveryInput.Uwb(uwb))
         return null
     }
 
@@ -178,5 +203,7 @@ class MainActivity : ComponentActivity() {
         const val EXTRA_ZONE_CODE = "nl.decoy.app.extra.ZONE_CODE"
         /** `fake` (default) or `staging` for open-banking relay mock. */
         const val EXTRA_PAYMENT_BACKEND = "nl.decoy.app.extra.PAYMENT_BACKEND"
+        const val EXTRA_BLE_AD = "nl.decoy.app.extra.BLE_AD"
+        const val EXTRA_UWB_AD = "nl.decoy.app.extra.UWB_AD"
     }
 }

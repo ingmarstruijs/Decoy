@@ -6,7 +6,10 @@ $patterns = @(
     "com.google.android.gms",
     "com.google.firebase",
     "firebase-analytics",
-    "play-services"
+    "play-services",
+    "com.google.android.gms.ads",
+    "FirebaseAnalytics",
+    "GoogleSignIn"
 )
 $include = @("*.kt", "*.kts", "*.toml", "*.xml", "*.gradle")
 $hits = @()
