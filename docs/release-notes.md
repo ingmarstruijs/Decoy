@@ -1,23 +1,23 @@
 # Release notes
 
-## 0.1.0 (Phase 0–6 prep)
+## 0.1.0 (Phase 0–6b prep)
 
 First milestone build of Decoy: FOSS Android privacy layer for physical-world services, fixture-first and F-Droid-oriented.
 
 ### Included
 
-- Plugin shell: QR, URL, NFC, zone keypad, **BLE / UWB injection** (local-only ambient)
-- One-shot fixtures: campsite/terrace order, parking, captive portal, EV, vending
-- Multi-day fixtures: campsite stay, short-stay cabin, festival/venue pass (encrypted vault + TTL)
-- Field policy: Needed / ContactAlias / PayElsewhere / Omit / ConsentRequired
-- Payments: Fake (CI default) + staging open-banking relay mock
-- Privacy HTTP defaults + banned identity interceptor
-- Debug test lab scenarios; docs under `docs/`
+- **Product shell:** ready-to-scan home, Zone or link, FOSS camera QR (CameraX + ZXing)
+- Unresolved screen for unknown public QR payloads (nothing sent to vendor)
+- Public sample PNGs under `fixtures/public-qr/`
+- Demo fixtures sheet (debug only) for inject + payment backend toggle
+- QR, URL, NFC, zone, **BLE / UWB injection** (local-only ambient)
+- One-shot + Multi-day fixture plugins; field policy; Fake + staging payment port
+- Privacy HTTP defaults + banned identity interceptor; F-Droid metadata draft
 
 ### Explicitly not in this tag
 
-- Live venue / operator APIs
-- Production PSP settlement
+- Live venue / operator APIs (Phase 7)
+- Production PSP settlement (Phase 4b)
 - Physical BLE/NFC hardware requirement for CI
 - **F-Droid.org publication** (metadata + reproducible posture only — see [fdroid.md](fdroid.md))
 

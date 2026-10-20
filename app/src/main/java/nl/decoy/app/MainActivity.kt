@@ -6,14 +6,16 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import nl.decoy.app.ui.DecoyAppScreen
+import nl.decoy.app.ui.demo.DemoActions
+import nl.decoy.app.ui.discovery.DiscoveryParse
 import nl.decoy.app.ui.theme.DecoyTheme
 import nl.decoy.core.DisposeReason
 import nl.decoy.core.ResolvedSession
@@ -32,84 +34,125 @@ class MainActivity : ComponentActivity() {
             DecoyTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background,
+                    color = Color.Transparent,
                 ) {
                     var session by remember { mutableStateOf(initial) }
+                    var unresolved by remember { mutableStateOf<String?>(null) }
                     var lastOutcome by remember { mutableStateOf<OrderOutcome?>(null) }
-                    var vaultStatus by remember { mutableStateOf<String?>(null) }
+                    var statusLine by remember { mutableStateOf<String?>(null) }
                     var paymentLabel by remember { mutableStateOf(app.paymentBackendLabel()) }
+                    var vaultTick by remember { mutableStateOf(0) }
 
                     fun resolve(input: DiscoveryInput) {
-                        session = app.resolver.resolve(input)
-                        lastOutcome = null
+                        val resolved = app.resolver.resolve(input)
+                        if (resolved == null) {
+                            unresolved = when (input) {
+                                is DiscoveryInput.Qr -> input.payload
+                                is DiscoveryInput.Url -> input.url
+                                is DiscoveryInput.ZoneCode -> input.code
+                                is DiscoveryInput.Nfc -> input.payload
+                                is DiscoveryInput.Ble -> input.advertisement
+                                is DiscoveryInput.Uwb -> input.advertisement
+                            }
+                            session = null
+                        } else {
+                            unresolved = null
+                            session = resolved
+                            lastOutcome = null
+                        }
                     }
+
+                    fun discover(raw: String) {
+                        try {
+                            resolve(DiscoveryParse.fromScannedOrPasted(raw, app.zones))
+                        } catch (_: Exception) {
+                            unresolved = raw
+                            session = null
+                        }
+                    }
+
+                    val vaultRecords = remember(vaultTick, session) {
+                        app.multiDay.listActive()
+                    }
+
+                    val outcomeStatus = lastOutcome?.let { o ->
+                        buildString {
+                            append(o.payment.status)
+                            o.payment.adapterId?.let { append(" via $it") }
+                            if (o.completed) append(" · wiped")
+                        }
+                    }
+                    val combinedStatus = listOfNotNull(statusLine, outcomeStatus).joinToString(" · ")
+                        .ifBlank { null }
 
                     DecoyAppScreen(
                         session = session,
-                        lastOutcome = lastOutcome,
-                        vaultStatus = vaultStatus,
-                        paymentBackendLabel = paymentLabel,
-                        onCyclePaymentBackend = {
-                            app.cyclePaymentBackend()
-                            paymentLabel = app.paymentBackendLabel()
-                        },
-                        onInjectHelloQr = {
-                            resolve(DiscoveryInput.Qr(FixtureCatalog.injectedHelloQr))
-                        },
-                        onInjectCampsiteQr = {
-                            resolve(DiscoveryInput.Qr(FixtureCatalog.injectedCampsiteQr))
-                        },
-                        onInjectTerraceQr = {
-                            resolve(DiscoveryInput.Qr(FixtureCatalog.injectedTerraceQr))
-                        },
-                        onInjectCampsiteNfc = {
-                            resolve(DiscoveryInput.Nfc(FixtureCatalog.injectedCampsiteNfc))
-                        },
-                        onInjectStayNfc = {
-                            resolve(DiscoveryInput.Nfc(FixtureCatalog.injectedStayNfc))
-                        },
-                        onInjectStayQr = {
-                            resolve(DiscoveryInput.Qr(FixtureCatalog.injectedStayQr))
-                        },
-                        onInjectParkingQr = {
-                            resolve(DiscoveryInput.Qr(FixtureCatalog.injectedParkingQr))
-                        },
-                        onInjectPortalQr = {
-                            resolve(DiscoveryInput.Qr(FixtureCatalog.injectedPortalQr))
-                        },
-                        onInjectEvQr = {
-                            resolve(DiscoveryInput.Qr(FixtureCatalog.injectedEvQr))
-                        },
-                        onInjectVendingQr = {
-                            resolve(DiscoveryInput.Qr(FixtureCatalog.injectedVendingQr))
-                        },
-                        onInjectCabinQr = {
-                            resolve(DiscoveryInput.Qr(FixtureCatalog.injectedCabinQr))
-                        },
-                        onInjectFestivalQr = {
-                            resolve(DiscoveryInput.Qr(FixtureCatalog.injectedFestivalQr))
-                        },
-                        onInjectBleCampsite = {
-                            resolve(DiscoveryInput.Ble(FixtureCatalog.injectedBleCampsiteOrder))
-                        },
-                        onInjectBleStay = {
-                            resolve(DiscoveryInput.Ble(FixtureCatalog.injectedBleStay))
-                        },
-                        onInjectBlePortal = {
-                            resolve(DiscoveryInput.Ble(FixtureCatalog.injectedBlePortal))
-                        },
-                        onInjectUwbCampsite = {
-                            resolve(DiscoveryInput.Uwb(FixtureCatalog.injectedUwbCampsiteOrder))
-                        },
-                        onSubmitZone = { code ->
-                            val mapped = app.zones.resolve(code)
-                                ?: DiscoveryInput.ZoneCode(code.trim())
-                            resolve(mapped)
-                        },
+                        unresolvedPayload = unresolved,
+                        vaultRecords = vaultRecords,
+                        statusLine = combinedStatus,
+                        showDemoEntry = BuildConfig.DEBUG,
+                        demoActions = DemoActions(
+                            paymentBackendLabel = paymentLabel,
+                            onCyclePaymentBackend = {
+                                app.cyclePaymentBackend()
+                                paymentLabel = app.paymentBackendLabel()
+                            },
+                            onInjectHelloQr = {
+                                resolve(DiscoveryInput.Qr(FixtureCatalog.injectedHelloQr))
+                            },
+                            onInjectCampsiteQr = {
+                                resolve(DiscoveryInput.Qr(FixtureCatalog.injectedCampsiteQr))
+                            },
+                            onInjectTerraceQr = {
+                                resolve(DiscoveryInput.Qr(FixtureCatalog.injectedTerraceQr))
+                            },
+                            onInjectCampsiteNfc = {
+                                resolve(DiscoveryInput.Nfc(FixtureCatalog.injectedCampsiteNfc))
+                            },
+                            onInjectStayNfc = {
+                                resolve(DiscoveryInput.Nfc(FixtureCatalog.injectedStayNfc))
+                            },
+                            onInjectStayQr = {
+                                resolve(DiscoveryInput.Qr(FixtureCatalog.injectedStayQr))
+                            },
+                            onInjectParkingQr = {
+                                resolve(DiscoveryInput.Qr(FixtureCatalog.injectedParkingQr))
+                            },
+                            onInjectPortalQr = {
+                                resolve(DiscoveryInput.Qr(FixtureCatalog.injectedPortalQr))
+                            },
+                            onInjectEvQr = {
+                                resolve(DiscoveryInput.Qr(FixtureCatalog.injectedEvQr))
+                            },
+                            onInjectVendingQr = {
+                                resolve(DiscoveryInput.Qr(FixtureCatalog.injectedVendingQr))
+                            },
+                            onInjectCabinQr = {
+                                resolve(DiscoveryInput.Qr(FixtureCatalog.injectedCabinQr))
+                            },
+                            onInjectFestivalQr = {
+                                resolve(DiscoveryInput.Qr(FixtureCatalog.injectedFestivalQr))
+                            },
+                            onInjectBleCampsite = {
+                                resolve(DiscoveryInput.Ble(FixtureCatalog.injectedBleCampsiteOrder))
+                            },
+                            onInjectBleStay = {
+                                resolve(DiscoveryInput.Ble(FixtureCatalog.injectedBleStay))
+                            },
+                            onInjectBlePortal = {
+                                resolve(DiscoveryInput.Ble(FixtureCatalog.injectedBlePortal))
+                            },
+                            onInjectUwbCampsite = {
+                                resolve(DiscoveryInput.Uwb(FixtureCatalog.injectedUwbCampsiteOrder))
+                            },
+                        ),
+                        onDiscover = { discover(it) },
+                        onClearUnresolved = { unresolved = null },
                         onPlaceOrder = { item, contextual ->
                             val current = session ?: return@DecoyAppScreen
                             val outcome = app.orderFlow.placeOrder(current, item, contextual)
                             lastOutcome = outcome
+                            statusLine = null
                             if (outcome.completed) {
                                 session = null
                             }
@@ -141,8 +184,8 @@ class MainActivity : ComponentActivity() {
                                 kind = kind,
                                 payload = payload,
                             )
-                            vaultStatus =
-                                "Vault: $kind $stayId (encrypted, Multi-day TTL) payload=$payload"
+                            statusLine = "Saved $kind · $stayId"
+                            vaultTick++
                             app.lifecycle.dispose(current, DisposeReason.Completed, success = true)
                             session = null
                         },
@@ -201,7 +244,6 @@ class MainActivity : ComponentActivity() {
         const val EXTRA_QR_PAYLOAD = "nl.decoy.app.extra.QR_PAYLOAD"
         const val EXTRA_NFC_PAYLOAD = "nl.decoy.app.extra.NFC_PAYLOAD"
         const val EXTRA_ZONE_CODE = "nl.decoy.app.extra.ZONE_CODE"
-        /** `fake` (default) or `staging` for open-banking relay mock. */
         const val EXTRA_PAYMENT_BACKEND = "nl.decoy.app.extra.PAYMENT_BACKEND"
         const val EXTRA_BLE_AD = "nl.decoy.app.extra.BLE_AD"
         const val EXTRA_UWB_AD = "nl.decoy.app.extra.UWB_AD"

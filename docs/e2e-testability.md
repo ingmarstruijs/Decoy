@@ -15,8 +15,8 @@ Prove Decoy **fully in the Android emulator** with mocks and stubs. No real surv
 |------|---------|
 | Default runtime in debug/CI | Mock/stub backends and injected inputs |
 | Live network vendors | Opt-in only; never required to merge |
-| Hardware (NFC, BLE, UWB, camera QR) | Emulated or injected; physical devices optional |
-| Payments | Fake adapter in emulator; staging PSP optional later |
+| Hardware (NFC, BLE, UWB, camera QR) | Injected in CI; physical camera/scan optional for manual tests |
+| Payments | Fake adapter in CI; staging relay mock for manual path; live rail = Phase 4b |
 
 If a feature cannot be completed on an emulator with mocks, it is **not done**.
 
@@ -24,7 +24,7 @@ If a feature cannot be completed on an emulator with mocks, it is **not done**.
 
 | Surface | Emulator approach |
 |---------|-------------------|
-| QR / camera | Inject decoded payload or fixture image URI (no real scan required) |
+| QR / camera | CI: inject/paste payload. Manual: FOSS camera scan or [public-qr-samples.md](public-qr-samples.md) |
 | URL / deep link | `adb shell am start` with intent extras / App Links test intents |
 | NFC | Inject tag payload via test API or emulator NFC simulation |
 | Manual zone keypad | UI Automator / Compose test input |
@@ -44,15 +44,12 @@ If a feature cannot be completed on an emulator with mocks, it is **not done**.
 - No live campsite / parking / operator servers in CI
 - `:fixtures` module owns shared payloads and stub servers
 
-### Debug / demo harness
+### Product home + Demo harness
 
-Ship a **debug-only** entry (hidden or flagged) that:
-
-- Lists fixture scenarios (campsite order, terrace, parking zone `4021`, …)
-- Starts a flow with one tap (injects input + binds stubs)
-- Shows whether privacy interceptors would block a request
-
-Release/F-Droid builds omit this harness or compile it out.
+- **Product home** (all builds): Scan, Zone or link, active Multi-day vault
+- **Demo fixtures** (debug only): one-tap inject for campsite, parking, BLE, etc.; payment backend toggle
+- Release/F-Droid builds omit Demo (`BuildConfig.DEBUG`)
+- Unknown public QR → Unresolved UI (no vendor fetch) — see live API ladder in [development-phases.md](development-phases.md)
 
 ### Deterministic fixtures
 
@@ -99,7 +96,7 @@ A use case is “done” for testability when:
 - [ ] PII policy asserted (keep / alias / omit / pay-elsewhere)
 - [ ] No WebView / no stable device IDs on the happy path
 - [ ] Linked from [use-cases.md](use-cases.md)
-- [ ] Reachable from debug/demo harness (or equivalent scripted `adb` intent)
+- [ ] Reachable from product Scan/paste, Demo fixtures (debug), or scripted `adb` intent
 
 ## Out of scope for CI
 
