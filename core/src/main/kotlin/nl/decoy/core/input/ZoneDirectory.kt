@@ -27,6 +27,7 @@ class ZoneDirectory(
             "CABIN3" to DiscoveryInput.Qr("decoy://cabin/unit=3?fixture=1&via=keypad"),
             "PASS1" to DiscoveryInput.Qr("decoy://festival/pass?event=FX26&fixture=1&via=keypad"),
             "FX26" to DiscoveryInput.Qr("decoy://festival/pass?event=FX26&fixture=1&via=keypad"),
+            "BUTLAROO" to DiscoveryInput.Qr("decoy://butlaroo/order?table=12&fixture=1&via=keypad"),
         )
     }
 }

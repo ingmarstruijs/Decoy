@@ -73,6 +73,7 @@ object FixtureCatalog {
     val injectedBleCabin = AmbientFixtures.BLE_CABIN
     val injectedBleFestival = AmbientFixtures.BLE_FESTIVAL
     val injectedUwbCampsiteOrder = AmbientFixtures.UWB_CAMPSITE_ORDER
+    val injectedButlarooQr = ButlarooOrderPlugin.FIXTURE_QR
 
     fun allPlugins() = listOf(
         HelloFixturePlugin(),
@@ -85,5 +86,6 @@ object FixtureCatalog {
         VendingPlugin(),
         ShortStayCabinPlugin(),
         FestivalPassPlugin(),
+        ButlarooOrderPlugin(),
     )
 }

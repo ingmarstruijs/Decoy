@@ -13,5 +13,6 @@ kotlin {
 
 dependencies {
     api(project(":plugins-api"))
+    implementation(project(":privacy-net"))
     testImplementation(libs.junit)
 }

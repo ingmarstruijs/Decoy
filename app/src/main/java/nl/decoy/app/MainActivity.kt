@@ -20,6 +20,8 @@ import nl.decoy.app.ui.theme.DecoyTheme
 import nl.decoy.core.DisposeReason
 import nl.decoy.core.ResolvedSession
 import nl.decoy.core.order.OrderOutcome
+import nl.decoy.core.retention.HistoryEndReason
+import nl.decoy.core.retention.HistoryRetentionClass
 import nl.decoy.fixtures.FixtureCatalog
 import nl.decoy.plugins.api.DiscoveryInput
 
@@ -43,6 +45,22 @@ class MainActivity : ComponentActivity() {
                     var statusLine by remember { mutableStateOf<String?>(null) }
                     var paymentLabel by remember { mutableStateOf(app.paymentBackendLabel()) }
                     var vaultTick by remember { mutableStateOf(0) }
+                    var historyTick by remember { mutableStateOf(0) }
+
+                    fun recordOneShot(
+                        current: ResolvedSession,
+                        reason: HistoryEndReason,
+                        reference: String? = null,
+                    ) {
+                        app.history.record(
+                            kind = historyKind(current),
+                            label = historyLabel(current),
+                            retention = HistoryRetentionClass.OneShot,
+                            endReason = reason,
+                            reference = reference,
+                        )
+                        historyTick++
+                    }
 
                     fun resolve(input: DiscoveryInput) {
                         val resolved = app.resolver.resolve(input)
@@ -75,6 +93,9 @@ class MainActivity : ComponentActivity() {
                     val vaultRecords = remember(vaultTick, session) {
                         app.multiDay.listActive()
                     }
+                    val historyRecords = remember(historyTick, session) {
+                        app.history.listRecent()
+                    }
 
                     val outcomeStatus = lastOutcome?.let { o ->
                         buildString {
@@ -90,6 +111,7 @@ class MainActivity : ComponentActivity() {
                         session = session,
                         unresolvedPayload = unresolved,
                         vaultRecords = vaultRecords,
+                        historyRecords = historyRecords,
                         statusLine = combinedStatus,
                         showDemoEntry = BuildConfig.DEBUG,
                         demoActions = DemoActions(
@@ -128,6 +150,9 @@ class MainActivity : ComponentActivity() {
                             onInjectVendingQr = {
                                 resolve(DiscoveryInput.Qr(FixtureCatalog.injectedVendingQr))
                             },
+                            onInjectButlarooQr = {
+                                resolve(DiscoveryInput.Qr(FixtureCatalog.injectedButlarooQr))
+                            },
                             onInjectCabinQr = {
                                 resolve(DiscoveryInput.Qr(FixtureCatalog.injectedCabinQr))
                             },
@@ -155,6 +180,11 @@ class MainActivity : ComponentActivity() {
                             lastOutcome = outcome
                             statusLine = null
                             if (outcome.completed) {
+                                val proof = listOfNotNull(
+                                    outcome.payment.reference,
+                                    item.name.takeIf { it.isNotBlank() },
+                                ).joinToString(" · ").ifBlank { null }
+                                recordOneShot(current, HistoryEndReason.Completed, reference = proof)
                                 session = null
                             }
                         },
@@ -170,6 +200,8 @@ class MainActivity : ComponentActivity() {
                         },
                         onStopTimed = {
                             val current = session ?: return@DecoyAppScreen
+                            val proof = lastOutcome?.payment?.reference
+                            recordOneShot(current, HistoryEndReason.Completed, reference = proof)
                             app.lifecycle.dispose(current, DisposeReason.Completed, success = true)
                             lastOutcome = lastOutcome?.copy(completed = true)
                             session = null
@@ -190,9 +222,27 @@ class MainActivity : ComponentActivity() {
                             app.lifecycle.dispose(current, DisposeReason.Completed, success = true)
                             session = null
                         },
+                        onEndStay = { stayId ->
+                            val record = vaultRecords.find { it.id == stayId } ?: return@DecoyAppScreen
+                            app.multiDay.end(stayId)
+                            app.history.record(
+                                kind = record.kind,
+                                label = record.id,
+                                retention = HistoryRetentionClass.MultiDay,
+                                endReason = HistoryEndReason.Ended,
+                            )
+                            statusLine = "Ended ${record.kind} · ${record.id}"
+                            vaultTick++
+                            historyTick++
+                        },
+                        onClearHistory = {
+                            app.history.clear()
+                            historyTick++
+                        },
                         onCompleteSimple = {
                             val current = session
                             if (current != null) {
+                                recordOneShot(current, HistoryEndReason.Completed)
                                 app.lifecycle.dispose(current, DisposeReason.Completed, success = true)
                                 session = null
                             }
@@ -200,6 +250,7 @@ class MainActivity : ComponentActivity() {
                         onWalkAway = {
                             val current = session
                             if (current != null) {
+                                recordOneShot(current, HistoryEndReason.Dismissed)
                                 app.lifecycle.walkAway(current)
                                 session = null
                             }
@@ -207,6 +258,7 @@ class MainActivity : ComponentActivity() {
                         onDismiss = {
                             val current = session
                             if (current != null) {
+                                recordOneShot(current, HistoryEndReason.Dismissed)
                                 app.lifecycle.dismiss(current)
                                 session = null
                             }
@@ -248,5 +300,18 @@ class MainActivity : ComponentActivity() {
         const val EXTRA_PAYMENT_BACKEND = "nl.decoy.app.extra.PAYMENT_BACKEND"
         const val EXTRA_BLE_AD = "nl.decoy.app.extra.BLE_AD"
         const val EXTRA_UWB_AD = "nl.decoy.app.extra.UWB_AD"
+
+        internal fun historyKind(session: ResolvedSession): String =
+            session.context.attributes["kind"]
+                ?: session.plugin.id.removePrefix("fixture.").substringBefore('.')
+                    .ifBlank { session.plugin.id }
+
+        internal fun historyLabel(session: ResolvedSession): String {
+            val attrs = session.context.attributes
+            return attrs["stayId"]
+                ?: attrs["zone"]?.let { "zone $it" }
+                ?: attrs["pitch"]?.let { "pitch $it" }
+                ?: session.context.contextId
+        }
     }
 }
