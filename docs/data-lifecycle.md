@@ -74,7 +74,8 @@ After a context ends, Decoy may keep a **short local breadcrumb** so the home sc
 | Rule | Detail |
 |------|--------|
 | Stored | Kind, short label (zone / stay id), retention class, end reason, timestamps |
-| Not stored | Payloads, receipts, plates, emails, vault ciphertext, full QR URLs |
+| Optional proof | Short **reference** only — payment ref, order/ticket id (so One-shot wipe still leaves a usable stub) |
+| Not stored | Full receipts, itemized carts, plates, emails, vault ciphertext, full QR URLs, payment secrets |
 | Lifetime | Default TTL (days) + hard cap on entry count; user **Clear** wipes all |
 | Cloud | None |
 | Relation to retention | History is not the active session; One-shot wipe and Multi-day vault rules still apply |

@@ -255,5 +255,7 @@ private fun formatHistoryLine(entry: HistoryEntry): String {
         HistoryEndReason.Dismissed -> "dismissed"
         HistoryEndReason.Ended -> "ended"
     }
-    return "${entry.kind} · ${entry.label} · $retention · $reason"
+    val base = "${entry.kind} · ${entry.label} · $retention · $reason"
+    val ref = entry.reference?.let { " · $it" }.orEmpty()
+    return base + ref
 }

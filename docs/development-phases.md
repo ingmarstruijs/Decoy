@@ -357,6 +357,7 @@ Manual keypad remains a shared trigger variant. Each case meets the acceptance c
 ### Work
 
 - Minimal local `SessionHistory` (kind, label, retention class, end reason) — no payloads/PII
+- Optional short **reference** (payment ref / order stub) so One-shot wipe still leaves a usable proof
 - Product home **Recent** strip + **Clear**
 - **End** on active vault stays → vault delete + history row
 - Record history on One-shot complete / dismiss / stop timed (not on “confirm stay”)

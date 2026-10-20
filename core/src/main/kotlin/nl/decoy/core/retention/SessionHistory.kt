@@ -6,8 +6,9 @@ import java.time.Instant
 import java.util.UUID
 
 /**
- * Minimal local breadcrumb after a context ends. No payloads, receipts, or PII —
- * only enough to answer "what did I recently finish?"
+ * Minimal local breadcrumb after a context ends.
+ * May keep a short [HistoryEntry.reference] (order / pay / ticket id) so One-shot
+ * wipe does not erase the only proof the user needs — never full receipts or PII.
  */
 enum class HistoryRetentionClass {
     OneShot,
@@ -28,6 +29,8 @@ data class HistoryEntry(
     val endedAt: Instant,
     val endReason: HistoryEndReason,
     val expiresAt: Instant,
+    /** Order number, payment ref, or ticket id — short local proof only. */
+    val reference: String? = null,
 )
 
 interface SessionHistoryStore {
@@ -74,6 +77,7 @@ class SessionHistoryService(
         label: String,
         retention: HistoryRetentionClass,
         endReason: HistoryEndReason,
+        reference: String? = null,
         ttl: Duration = defaultTtl,
     ): HistoryEntry {
         val now = clock.instant()
@@ -85,6 +89,7 @@ class SessionHistoryService(
             endedAt = now,
             endReason = endReason,
             expiresAt = now.plus(ttl),
+            reference = reference?.trim()?.takeIf { it.isNotEmpty() }?.take(64),
         )
         store.append(entry)
         trim()

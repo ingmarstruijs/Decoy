@@ -58,6 +58,20 @@ class SessionHistoryTest {
     }
 
     @Test
+    fun keepsShortReferenceAsProof() {
+        val history = SessionHistoryService(InMemorySessionHistoryStore())
+        history.record(
+            kind = "campsite",
+            label = "pitch 42",
+            retention = HistoryRetentionClass.OneShot,
+            endReason = HistoryEndReason.Completed,
+            reference = "fake-650 · Sandwich",
+        )
+        val entry = history.listRecent().single()
+        assertEquals("fake-650 · Sandwich", entry.reference)
+    }
+
+    @Test
     fun capsMaxEntries() {
         val history = SessionHistoryService(
             store = InMemorySessionHistoryStore(),

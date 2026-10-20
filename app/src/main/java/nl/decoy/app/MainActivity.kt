@@ -47,12 +47,17 @@ class MainActivity : ComponentActivity() {
                     var vaultTick by remember { mutableStateOf(0) }
                     var historyTick by remember { mutableStateOf(0) }
 
-                    fun recordOneShot(current: ResolvedSession, reason: HistoryEndReason) {
+                    fun recordOneShot(
+                        current: ResolvedSession,
+                        reason: HistoryEndReason,
+                        reference: String? = null,
+                    ) {
                         app.history.record(
                             kind = historyKind(current),
                             label = historyLabel(current),
                             retention = HistoryRetentionClass.OneShot,
                             endReason = reason,
+                            reference = reference,
                         )
                         historyTick++
                     }
@@ -175,7 +180,11 @@ class MainActivity : ComponentActivity() {
                             lastOutcome = outcome
                             statusLine = null
                             if (outcome.completed) {
-                                recordOneShot(current, HistoryEndReason.Completed)
+                                val proof = listOfNotNull(
+                                    outcome.payment.reference,
+                                    item.name.takeIf { it.isNotBlank() },
+                                ).joinToString(" · ").ifBlank { null }
+                                recordOneShot(current, HistoryEndReason.Completed, reference = proof)
                                 session = null
                             }
                         },
@@ -191,7 +200,8 @@ class MainActivity : ComponentActivity() {
                         },
                         onStopTimed = {
                             val current = session ?: return@DecoyAppScreen
-                            recordOneShot(current, HistoryEndReason.Completed)
+                            val proof = lastOutcome?.payment?.reference
+                            recordOneShot(current, HistoryEndReason.Completed, reference = proof)
                             app.lifecycle.dispose(current, DisposeReason.Completed, success = true)
                             lastOutcome = lastOutcome?.copy(completed = true)
                             session = null
