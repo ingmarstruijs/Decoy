@@ -86,10 +86,10 @@ Names may be refined at implement time; responsibilities must not blur.
 
 ### Exit criteria
 
-- [ ] App launches on emulator
-- [ ] Fake plugin shows Compose UI via plugin API with stubs only
-- [ ] Privacy CI gates green
-- [ ] Documented how to run the smoke flow on an AVD
+- [x] App launches on emulator (`:app:assembleDebug` builds; install via `installDebug`)
+- [x] Fake plugin shows Compose UI via plugin API with stubs only (`HelloFixturePlugin`)
+- [x] Privacy CI gates green (`./gradlew test` + `scripts/check-banned-apis.ps1`)
+- [x] Documented how to run the smoke flow on an AVD ([dev-setup.md](dev-setup.md))
 
 ---
 

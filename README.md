@@ -2,11 +2,69 @@
 
 For a free, anonymous, and frictionless physical world.
 
-Engineering docs live in [`docs/`](docs/README.md).
+Specs and architecture: [`docs/`](docs/README.md). Roadmap: [`docs/development-phases.md`](docs/development-phases.md).
 
 ## System overview
 
 ![Decoy system overview: inputs flow into Decoy Core, which enforces local guarantees](docs/assets/decoy-system-overview.jpg)
+
+## Development
+
+Kotlin + Jetpack Compose, multi-module Android, F-Droid-oriented (no Play Services / Firebase). Everything in Phase 0 is exercisable on an emulator with mocks/stubs — no camera or live vendors required.
+
+### Requirements
+
+- JDK 17+
+- Android SDK (AVD recommended)
+- Gradle Wrapper (`gradlew` / `gradlew.bat`)
+
+### Build & test
+
+```bash
+./gradlew test
+./gradlew :app:assembleDebug
+```
+
+Banned proprietary / advertising-ID references (PowerShell):
+
+```powershell
+./scripts/check-banned-apis.ps1
+```
+
+### Emulator smoke (inject QR, no camera)
+
+```bash
+./gradlew :app:installDebug
+adb shell am start -n nl.decoy.app.debug/nl.decoy.app.MainActivity -a nl.decoy.app.INJECT_QR --es nl.decoy.app.extra.QR_PAYLOAD "decoy://hello?fixture=1"
+```
+
+Or open the app and tap **Inject hello fixture QR**. You should see **Hello Decoy**; **Complete session** wipes the One-shot session.
+
+### Modules
+
+| Module | Role |
+|--------|------|
+| `:app` | Compose shell + debug inject entry |
+| `:core` | ContextResolver + retention |
+| `:privacy-net` | OkHttp privacy defaults + ID bans |
+| `:plugins-api` | Plugin contract |
+| `:fixtures` | Deterministic plugins / payloads for CI |
+
+More detail: [`docs/dev-setup.md`](docs/dev-setup.md).
+
+### Branches
+
+`main` is protected — no direct pushes. Work on a feature branch and open a PR:
+
+```bash
+git checkout main && git pull
+git checkout -b feature/short-description
+# … commit …
+git push -u origin HEAD
+gh pr create --base main
+```
+
+See [`docs/branching.md`](docs/branching.md).
 
 ## The Manifesto
 
