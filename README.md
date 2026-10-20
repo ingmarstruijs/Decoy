@@ -44,8 +44,8 @@ For cooperative access control that accepts cryptographic proofs, venues may ver
 
 Data must not permanently reside in the cloud. Decoy enforces rigorous data retention hygiene, splitting interactions into two strict categories:
 
-- **One-shot:** Instant actions (such as ordering a drink at a terrace, renting a bike, or an anonymous parking session) are entirely wiped from the device's volatile memory the moment the transaction completes or the user moves away.
-- **Multi-day:** Transient relationships (such as campsite food pre-orders or multi-day apartment rentals) are stored locally using hardware-accelerated encryption and are automatically, permanently destroyed after a pre-defined window of days.
+- **One-shot:** One active session for a single activity (order a drink, rent a bike until return, run a parking session). Data may stay for the whole session—not only until payment—and is wiped when the session ends, with a default safety auto-destroy TTL unless the user pins that session.
+- **Multi-day:** Transient relationships (such as campsite stays or short apartment rentals) are stored locally using hardware-accelerated encryption and are auto-destroyed after a pre-defined window of days unless the user extends; never permanent cloud retention.
 
 #### 5. 100% FOSS, Local-First & Anonymous Payments
 

@@ -32,7 +32,7 @@ If a feature cannot be completed on an emulator with mocks, it is **not done**.
 | Captive portal | Local mock HTTP server on emulator loopback (or instrumented fake) |
 | Venue / menu / parking APIs | Plugin ports + stub implementations returning fixture JSON |
 | Payments | `FakePaymentAdapter` (success/fail/cancel) |
-| Time / TTL (Multi-day wipe) | Controllable clock in tests |
+| Time / TTL (One-shot safety wipe + Multi-day wipe) | Controllable clock in tests |
 | Alias email | Deterministic generator (no real mailbox required in CI) |
 
 ## Strategy
@@ -75,8 +75,9 @@ Automated checks must fail the build if violated:
 | No cookies persisted across One-shot sessions | Unit + e2e |
 | No GPS in cleartext request URLs/bodies | Network interceptor tests |
 | No `ANDROID_ID` / GAID / install-UUID in outbound traffic | Interceptor + CI API grep |
-| One-shot wipe leaves no PII in local DB/prefs | Instrumented on emulator |
-| Multi-day TTL expiry deletes records | Unit + instrumented (fake clock) |
+| One-shot wipe on session end leaves no PII in local DB/prefs | Instrumented on emulator |
+| One-shot safety TTL wipes abandoned sessions (e.g. bike never returned in app) | Unit + instrumented (fake clock) |
+| Multi-day TTL auto-destroy deletes records; pin/extend opt-out honored until stay end | Unit + instrumented (fake clock) |
 | Flow completable with stubs only (no WAN) | Instrumented on emulator (airplane mode optional assert) |
 
 ### Suggested layers

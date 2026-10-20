@@ -14,10 +14,10 @@ Retention terms: **One-shot** or **Multi-day** ([data-lifecycle.md](data-lifecyc
 |--|--|
 | **Actor** | Rider |
 | **Trigger** | QR, NFC, or BLE near lock |
-| **Flow** | Resolve vehicle → Compose unlock UI → pay/auth out-of-band → unlock → dispose |
-| **Retention** | One-shot |
+| **Flow** | Resolve vehicle → Compose unlock UI → pay/auth out-of-band → unlock → **keep session for the ride** → return/lock → wipe |
+| **Retention** | One-shot (session = whole rental, not unlock alone); default auto-destroy TTL if abandoned |
 | **PII policy** | No account if protocol allows; alias if contact required; no stable device ID |
-| **Privacy outcome** | No vendor app install; session wiped after ride ends |
+| **Privacy outcome** | No vendor app install; session wiped after return (or safety TTL), not at first payment |
 
 ### Terrace order (table QR)
 
@@ -47,8 +47,8 @@ Retention terms: **One-shot** or **Multi-day** ([data-lifecycle.md](data-lifecyc
 |--|--|
 | **Actor** | Driver |
 | **Trigger** | Zone code, QR, or NFC |
-| **Flow** | Keypad or scan → session UI → pay → optional plate with consent → wipe |
-| **Retention** | One-shot |
+| **Flow** | Keypad or scan → session UI → pay → optional plate with consent → **active until stop** → wipe |
+| **Retention** | One-shot (session-scoped); default auto-destroy TTL if abandoned |
 | **PII policy** | Real plate only with explicit consent when required; never a fake plate; local wipe |
 | **Privacy outcome** | Minimal digital trail; cooperative hash/ZKP is future protocol |
 
