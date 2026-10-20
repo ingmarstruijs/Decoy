@@ -20,12 +20,14 @@ Kotlin + Jetpack Compose, multi-module Android, F-Droid-oriented (no Play Servic
 
 ### Build & test
 
+CI runs these on every PR to `main` (see `.github/workflows/ci.yml`):
+
 ```bash
 ./gradlew test
 ./gradlew :app:assembleDebug
 ```
 
-Banned proprietary / advertising-ID references (PowerShell):
+Banned proprietary / advertising-ID references (PowerShell / `pwsh`):
 
 ```powershell
 ./scripts/check-banned-apis.ps1

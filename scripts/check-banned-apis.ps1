@@ -12,7 +12,10 @@ $include = @("*.kt", "*.kts", "*.toml", "*.xml", "*.gradle")
 $hits = @()
 foreach ($pattern in $patterns) {
     $found = Get-ChildItem -Path $root -Recurse -Include $include |
-        Where-Object { $_.FullName -notmatch '\\build\\|\\\.gradle\\|\\scripts\\' } |
+        Where-Object {
+            $p = $_.FullName.Replace('\', '/')
+            $p -notmatch '/build/' -and $p -notmatch '/\.gradle/' -and $p -notmatch '/scripts/'
+        } |
         Select-String -Pattern $pattern -SimpleMatch
     if ($found) {
         $hits += $found

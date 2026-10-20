@@ -10,12 +10,14 @@ Do not commit on `main`. Use a feature branch and PR — see [branching.md](bran
 
 ## Build & unit tests
 
+Same commands as CI (`.github/workflows/ci.yml`):
+
 ```bash
 ./gradlew test
 ./gradlew :app:assembleDebug
 ```
 
-Banned API gate (PowerShell):
+Banned API gate (PowerShell / `pwsh`):
 
 ```powershell
 ./scripts/check-banned-apis.ps1
