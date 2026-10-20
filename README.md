@@ -2,6 +2,12 @@
 
 For a free, anonymous, and frictionless physical world.
 
+Engineering docs live in [`docs/`](docs/README.md).
+
+## System overview
+
+![Decoy system overview: inputs flow into Decoy Core, which enforces local guarantees](docs/assets/decoy-system-overview.jpg)
+
 ## The Manifesto
 
 The physical world has been hijacked by digital walls. Today, you cannot unlock a shared bicycle, order food at a campsite, sit at a terrace, start a parking session, or adjust a thermostat without being confronted by the ultimate friction of the modern internet: app fatigue, mandatory accounts, and surveillance capitalism.
@@ -30,14 +36,16 @@ If no hardware tag or visual code is present, the application effortlessly trans
 
 We refuse to expose personal data or permanent identifiers to the infrastructure surrounding us. This is where the app earns its name: it feeds the surveillance machine a decoy.
 
-When a vendor or parking authority requires an account or identification, Decoy dynamically generates encrypted, single-use masked emails and anonymous aliases on-the-fly. For vehicle verification or secure access control, the system employs cryptographic one-way hashes (Zero-Knowledge Proofs). Enforcement scanners and point-of-sale systems verify only an anonymous, cryptographically valid hash; your real identity and license plate never leave the security of your device.
+When a vendor requires an account or contact channel, Decoy dynamically generates encrypted, single-use masked emails and anonymous aliases on-the-fly—reachable when needed, never your permanent inbox or phone number. Irrelevant form fields (home address for an on-site order, marketing opt-ins, forced sign-up) are omitted. Payment secrets never go into vendor HTML forms.
 
-#### 4. Do & Forget vs. Keep for Days
+For cooperative access control that accepts cryptographic proofs, venues may verify anonymous hashes or zero-knowledge claims without receiving your real identity. Regulated identifiers (such as a license plate when the law requires it) leave the device only with explicit consent, as the real value, and are wiped under One-shot rules—not fabricated.
+
+#### 4. One-shot vs Multi-day
 
 Data must not permanently reside in the cloud. Decoy enforces rigorous data retention hygiene, splitting interactions into two strict categories:
 
-- **Do & Forget:** Instant actions (such as ordering a drink at a terrace, renting a bike, or an anonymous parking session) are entirely wiped from the device's volatile memory the moment the transaction completes or the user moves away.
-- **Keep for Days:** Transient relationships (such as campsite food pre-orders or multi-day apartment rentals) are stored locally using hardware-accelerated encryption and are automatically, permanently destroyed after a pre-defined window of days.
+- **One-shot:** Instant actions (such as ordering a drink at a terrace, renting a bike, or an anonymous parking session) are entirely wiped from the device's volatile memory the moment the transaction completes or the user moves away.
+- **Multi-day:** Transient relationships (such as campsite food pre-orders or multi-day apartment rentals) are stored locally using hardware-accelerated encryption and are automatically, permanently destroyed after a pre-defined window of days.
 
 #### 5. 100% FOSS, Local-First & Anonymous Payments
 
