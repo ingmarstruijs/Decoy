@@ -50,7 +50,7 @@ Vendors collecting surplus PII for trivial local transactions (e.g. home address
 - Vendor may reject an order if they hard-require surplus fields
 - Alias ≠ legal anonymity
 - True ZKP / cooperative hashes need a verifier that accepts them
-- Payment PSP / bank can still correlate
+- Payment PSP / bank can still correlate (open-banking / Web Payments relay does not remove this)
 - IP address and physical presence correlate
 
 ## QR → generated UI pipeline

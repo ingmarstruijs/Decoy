@@ -10,6 +10,10 @@ Pick a scenario → Decoy opens a fake session → follow the blue “Next” hi
 
 After you finish, you return to the lab. A **Last result** card shows payment status, which fields were kept/aliased/blocked/omitted, or vault status for stays.
 
+## Payment backend
+
+CI always uses **fake**. In the lab, tap **Switch payment backend** to use the **staging open-banking relay** (in-process mock, no production PSP). Last result shows `via open-banking-relay` and a relay reference. Details: [payments.md](payments.md).
+
 ## Recommended walkthroughs
 
 ### A. Hero order (campsite)
@@ -18,6 +22,12 @@ After you finish, you return to the lab. A **Last result** card shows payment st
 2. Read the field list: pitch kept, email aliased, IBAN blocked, home omitted
 3. Select **Sandwich** → **Pay & order**
 4. Back on home: Last result should show `Payment: Success` and `session wiped`
+
+### A2. Hero order via staging relay
+
+1. Tap **Switch payment backend** until label says staging open-banking relay
+2. Run campsite order as in A
+3. Last result: `via open-banking-relay`, reference `obr-staging-…`, IBAN still blocked
 
 ### B. Terrace
 

@@ -42,6 +42,8 @@ fun DecoyAppScreen(
     session: ResolvedSession?,
     lastOutcome: OrderOutcome?,
     vaultStatus: String?,
+    paymentBackendLabel: String,
+    onCyclePaymentBackend: () -> Unit,
     onInjectHelloQr: () -> Unit,
     onInjectCampsiteQr: () -> Unit,
     onInjectTerraceQr: () -> Unit,
@@ -78,6 +80,8 @@ fun DecoyAppScreen(
             DebugHome(
                 lastOutcome = lastOutcome,
                 vaultStatus = vaultStatus,
+                paymentBackendLabel = paymentBackendLabel,
+                onCyclePaymentBackend = onCyclePaymentBackend,
                 onInjectHelloQr = onInjectHelloQr,
                 onInjectCampsiteQr = onInjectCampsiteQr,
                 onInjectTerraceQr = onInjectTerraceQr,
@@ -182,6 +186,8 @@ fun DecoyAppScreen(
 private fun DebugHome(
     lastOutcome: OrderOutcome?,
     vaultStatus: String?,
+    paymentBackendLabel: String,
+    onCyclePaymentBackend: () -> Unit,
     onInjectHelloQr: () -> Unit,
     onInjectCampsiteQr: () -> Unit,
     onInjectTerraceQr: () -> Unit,
@@ -211,6 +217,35 @@ private fun DebugHome(
         }
     }
 
+    Card(
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+        modifier = Modifier
+            .fillMaxWidth()
+            .testTag("payment_backend_card"),
+    ) {
+        Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Text("Payment backend", style = MaterialTheme.typography.titleSmall)
+            Text(
+                text = "Active: $paymentBackendLabel",
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.testTag("payment_backend_label"),
+            )
+            Text(
+                text = "CI always uses fake. Staging open-banking relay is an in-process mock " +
+                    "(no production PSP). IBAN never goes into vendor forms either way.",
+                style = MaterialTheme.typography.bodySmall,
+            )
+            OutlinedButton(
+                onClick = onCyclePaymentBackend,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag("cycle_payment_backend"),
+            ) {
+                Text("Switch payment backend")
+            }
+        }
+    }
+
     if (lastOutcome != null || vaultStatus != null) {
         Card(
             modifier = Modifier
@@ -225,10 +260,14 @@ private fun DebugHome(
                 if (lastOutcome != null) {
                     Text(
                         text = "Payment: ${lastOutcome.payment.status}" +
+                            (lastOutcome.payment.adapterId?.let { " via $it" } ?: "") +
                             (lastOutcome.payment.message?.let { " — $it" } ?: "") +
                             if (lastOutcome.completed) " · session wiped" else " · session still open",
                         modifier = Modifier.testTag("last_payment"),
                     )
+                    lastOutcome.payment.reference?.let {
+                        Text("Reference: $it", modifier = Modifier.testTag("payment_reference"))
+                    }
                     lastOutcome.submission?.let { sub ->
                         Text("Kept: ${sub.outbound.keys.joinToString()}")
                         Text("Aliased: ${sub.aliasedFieldIds.joinToString()}")

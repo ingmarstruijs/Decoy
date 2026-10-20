@@ -39,8 +39,20 @@ class OrderFlow(
                 completed = false,
             )
 
-        val submission = classifier.classify(form.fields, contextualValues)
+        // Never feed PayElsewhere / payment-secret keys into classification.
+        val safeContextual = contextualValues.filterKeys { key ->
+            val lower = key.lowercase()
+            lower != "iban" &&
+                !lower.contains("card") &&
+                !lower.contains("account_number") &&
+                !form.fields.any { it.id == key && it.kind == nl.decoy.plugins.api.FieldKind.PayElsewhere }
+        }
+
+        val submission = classifier.classify(form.fields, safeContextual)
         classifier.assertNoSecrets(submission.outbound)
+        require(!submission.outbound.keys.any { it.equals("iban", ignoreCase = true) }) {
+            "Order flow must never place IBAN into vendor outbound payload"
+        }
 
         val payment = payments.pay(
             PaymentRequest(

@@ -31,7 +31,7 @@ If a feature cannot be completed on an emulator with mocks, it is **not done**.
 | BLE / UWB | Stub advertisement stream in `:fixtures` |
 | Captive portal | Local mock HTTP server on emulator loopback (or instrumented fake) |
 | Venue / menu / parking APIs | Plugin ports + stub implementations returning fixture JSON |
-| Payments | `FakePaymentAdapter` (success/fail/cancel) |
+| Payments | `FakePaymentAdapter` (CI default); staging open-banking relay mock for manual path |
 | Time / TTL (One-shot safety wipe + Multi-day wipe) | Controllable clock in tests |
 | Alias email | Deterministic generator (no real mailbox required in CI) |
 

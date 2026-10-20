@@ -47,6 +47,9 @@ adb shell am start -n nl.decoy.app.debug/nl.decoy.app.MainActivity -a nl.decoy.a
 adb shell am start -n nl.decoy.app.debug/nl.decoy.app.MainActivity --es nl.decoy.app.extra.NFC_PAYLOAD "decoy://campsite/order?nfc=1"
 adb shell am start -n nl.decoy.app.debug/nl.decoy.app.MainActivity --es nl.decoy.app.extra.ZONE_CODE "STAY42"
 
+# Phase 4 — staging open-banking relay (still no production PSP), then campsite order
+adb shell am start -n nl.decoy.app.debug/nl.decoy.app.MainActivity --es nl.decoy.app.extra.PAYMENT_BACKEND staging --es nl.decoy.app.extra.QR_PAYLOAD "decoy://campsite/order?fixture=1"
+
 # Phase 3 — One-shot catalog
 adb shell am start -n nl.decoy.app.debug/nl.decoy.app.MainActivity --es nl.decoy.app.extra.QR_PAYLOAD "decoy://parking/zone=4021?fixture=1"
 adb shell am start -n nl.decoy.app.debug/nl.decoy.app.MainActivity --es nl.decoy.app.extra.ZONE_CODE "4021"

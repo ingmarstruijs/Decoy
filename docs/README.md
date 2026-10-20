@@ -12,9 +12,10 @@ Specs and architecture for Decoy. The manifesto lives in the root [README](../RE
 6. [Threat model](threat-model.md) — privacy guarantees and residuals
 7. [Plugins architecture](plugins-architecture.md) — core vs capability plugins
 8. [End-to-end testability](e2e-testability.md) — how we prove it without vendor surveillance backends
-9. [Dev setup](dev-setup.md) — build, tests, emulator smoke
-10. [Manual test lab](manual-test-lab.md) — how to use the debug scenario screen
-11. [Branching](branching.md) — protected `main`, feature branches, PRs
+9. [Payments](payments.md) — Fake vs staging open-banking relay; IBAN-out-of-band invariant
+10. [Dev setup](dev-setup.md) — build, tests, emulator smoke
+11. [Manual test lab](manual-test-lab.md) — how to use the debug scenario screen
+12. [Branching](branching.md) — protected `main`, feature branches, PRs
 
 ## Conventions
 

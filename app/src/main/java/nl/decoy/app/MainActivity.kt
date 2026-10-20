@@ -37,6 +37,7 @@ class MainActivity : ComponentActivity() {
                     var session by remember { mutableStateOf(initial) }
                     var lastOutcome by remember { mutableStateOf<OrderOutcome?>(null) }
                     var vaultStatus by remember { mutableStateOf<String?>(null) }
+                    var paymentLabel by remember { mutableStateOf(app.paymentBackendLabel()) }
 
                     fun resolve(input: DiscoveryInput) {
                         session = app.resolver.resolve(input)
@@ -47,6 +48,11 @@ class MainActivity : ComponentActivity() {
                         session = session,
                         lastOutcome = lastOutcome,
                         vaultStatus = vaultStatus,
+                        paymentBackendLabel = paymentLabel,
+                        onCyclePaymentBackend = {
+                            app.cyclePaymentBackend()
+                            paymentLabel = app.paymentBackendLabel()
+                        },
                         onInjectHelloQr = {
                             resolve(DiscoveryInput.Qr(FixtureCatalog.injectedHelloQr))
                         },
@@ -153,6 +159,7 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun resolveFromIntent(intent: Intent?, app: DecoyApp): ResolvedSession? {
+        intent?.getStringExtra(EXTRA_PAYMENT_BACKEND)?.let { app.setPaymentBackendId(it) }
         val qr = intent?.getStringExtra(EXTRA_QR_PAYLOAD)
         if (qr != null) return app.resolver.resolve(DiscoveryInput.Qr(qr))
         val nfc = intent?.getStringExtra(EXTRA_NFC_PAYLOAD)
@@ -169,5 +176,7 @@ class MainActivity : ComponentActivity() {
         const val EXTRA_QR_PAYLOAD = "nl.decoy.app.extra.QR_PAYLOAD"
         const val EXTRA_NFC_PAYLOAD = "nl.decoy.app.extra.NFC_PAYLOAD"
         const val EXTRA_ZONE_CODE = "nl.decoy.app.extra.ZONE_CODE"
+        /** `fake` (default) or `staging` for open-banking relay mock. */
+        const val EXTRA_PAYMENT_BACKEND = "nl.decoy.app.extra.PAYMENT_BACKEND"
     }
 }
