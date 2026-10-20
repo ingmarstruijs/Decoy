@@ -21,6 +21,36 @@ data class PluginContext(
 )
 
 /**
+ * Vendor form field as declared by a plugin / fixture schema.
+ */
+enum class FieldKind {
+    /** Keep — contextual (pitch, table, notes). */
+    Needed,
+
+    /** Replace with single-use alias. */
+    ContactAlias,
+
+    /** Never collect in form; pay out-of-band. */
+    PayElsewhere,
+
+    /** Drop entirely (home address, marketing, forced account). */
+    Omit,
+}
+
+data class FormField(
+    val id: String,
+    val label: String,
+    val kind: FieldKind,
+    val vendorRequestedValue: String? = null,
+)
+
+data class MenuItem(
+    val id: String,
+    val name: String,
+    val priceCents: Int,
+)
+
+/**
  * UI state produced by a plugin for the Compose shell to render.
  * No Android types here — keep plugins-api JVM-pure.
  */
@@ -29,6 +59,14 @@ sealed class PluginUiState {
         val title: String,
         val body: String,
         val primaryActionLabel: String? = null,
+    ) : PluginUiState()
+
+    data class OrderForm(
+        val title: String,
+        val subtitle: String,
+        val menu: List<MenuItem>,
+        val fields: List<FormField>,
+        val primaryActionLabel: String = "Pay & order",
     ) : PluginUiState()
 
     data class Error(val message: String) : PluginUiState()

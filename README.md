@@ -37,10 +37,10 @@ Banned proprietary / advertising-ID references (PowerShell / `pwsh`):
 
 ```bash
 ./gradlew :app:installDebug
-adb shell am start -n nl.decoy.app.debug/nl.decoy.app.MainActivity -a nl.decoy.app.INJECT_QR --es nl.decoy.app.extra.QR_PAYLOAD "decoy://hello?fixture=1"
+adb shell am start -n nl.decoy.app.debug/nl.decoy.app.MainActivity -a nl.decoy.app.INJECT_QR --es nl.decoy.app.extra.QR_PAYLOAD "decoy://campsite/order?fixture=1"
 ```
 
-Or open the app and tap **Inject hello fixture QR**. You should see **Hello Decoy**; **Complete session** wipes the One-shot session.
+Or tap **Inject campsite order QR** in the app. Pick a menu item → **Pay & order** (fake payment); session wipes. IBAN/home are blocked/omitted.
 
 ### Modules
 
