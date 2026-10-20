@@ -152,7 +152,7 @@ Names may be refined at implement time; responsibilities must not blur.
 - NFC + manual zone / short-code keypad through ContextResolver
 - Alias generator (local generation; configurable relay later)
 - Multi-day encrypted vault (e.g. campsite stay pitch context)
-- Walk-away / dismiss dispose behavior for active contexts
+- Dismiss dispose behavior for active contexts
 
 ### Tests
 
@@ -169,7 +169,7 @@ Names may be refined at implement time; responsibilities must not blur.
 
 - [x] QR, URL, NFC, keypad all resolve into plugins
 - [x] Multi-day vault encrypts and TTL-wipes
-- [x] Dispose on walk-away/dismiss verified
+- [x] Dispose on dismiss verified
 
 ---
 

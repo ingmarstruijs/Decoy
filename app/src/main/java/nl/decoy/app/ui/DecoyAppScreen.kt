@@ -51,7 +51,6 @@ fun DecoyAppScreen(
     onStopTimed: () -> Unit,
     onConfirmStay: () -> Unit,
     onCompleteSimple: () -> Unit,
-    onWalkAway: () -> Unit,
     onDismiss: () -> Unit,
 ) {
     var route by remember { mutableStateOf(ShellRoute.Home) }
@@ -83,14 +82,12 @@ fun DecoyAppScreen(
                         ui = ui,
                         onConfirmMultiDay = onConfirmStay,
                         onCompleteSimple = onCompleteSimple,
-                        onWalkAway = onWalkAway,
                         onDismiss = onDismiss,
                     )
                     is PluginUiState.OrderForm -> OrderSessionScreen(
                         session = session,
                         form = ui,
                         onPlaceOrder = onPlaceOrder,
-                        onWalkAway = onWalkAway,
                         onDismiss = onDismiss,
                     )
                     is PluginUiState.TimedSession -> TimedSessionScreen(
@@ -98,7 +95,6 @@ fun DecoyAppScreen(
                         timed = ui,
                         onStartTimed = onStartTimed,
                         onStopTimed = onStopTimed,
-                        onWalkAway = onWalkAway,
                         onDismiss = onDismiss,
                     )
                     is PluginUiState.Error -> {

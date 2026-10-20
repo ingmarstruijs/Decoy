@@ -5,7 +5,7 @@ The app opens on the **product home** (ready to scan), not a scenario dashboard.
 ## Mental model
 
 ```text
-Scan or paste → session UI → finish / Walk away → home
+Scan or paste → session UI → finish / Dismiss → home
 ```
 
 Debug builds also expose **Demo fixtures** (overflow on home) to inject discovery without camera or radio.
@@ -42,9 +42,9 @@ Open **Demo fixtures** on home. Grouped One-shot / Multi-day / Ambient inject bu
 
 Release builds omit Demo.
 
-## Walk away
+## Dismiss
 
-From any session, **Walk away** wipes the One-shot UI session without completing pay/confirm.
+From any session, **Dismiss** cancels and wipes the One-shot UI session without completing pay/confirm.
 
 ## adb
 

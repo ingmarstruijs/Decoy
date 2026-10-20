@@ -85,7 +85,7 @@ Decoy draws a line in the sand. We reclaim the physical interface by deploying a
 
 #### 1. Contextual Transformation (Zero-Install & UI Overwrite)
 
-An interface must appear exactly when you need it and vanish the moment you walk away. No app stores, no downloads, and no sluggish third-party interfaces. Decoy acts as a universal, open-source layer for the physical world.
+An interface must appear exactly when you need it and vanish when you are done. No app stores, no downloads, and no sluggish third-party interfaces. Decoy acts as a universal, open-source layer for the physical world.
 
 The application instantly blocks tracking scripts and advertising pixels hidden in local networks. It actively ignores the bloated, broken web-views of campsite, parking, or restaurant applications, and instead renders a clean, native, and high-performance Jetpack Compose interface within milliseconds, powered entirely by open backend protocols.
 

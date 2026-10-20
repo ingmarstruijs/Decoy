@@ -197,13 +197,6 @@ class MainActivity : ComponentActivity() {
                                 session = null
                             }
                         },
-                        onWalkAway = {
-                            val current = session
-                            if (current != null) {
-                                app.lifecycle.walkAway(current)
-                                session = null
-                            }
-                        },
                         onDismiss = {
                             val current = session
                             if (current != null) {
