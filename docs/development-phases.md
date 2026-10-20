@@ -217,9 +217,9 @@ Manual keypad remains a shared trigger variant. Each case meets the acceptance c
 
 ### Exit criteria
 
-- [ ] One staging payment path works for hero order
-- [ ] CI remains fake-default and green
-- [ ] IBAN-in-form ban enforced in tests
+- [x] One staging payment path works for hero order
+- [x] CI remains fake-default and green
+- [x] IBAN-in-form ban enforced in tests
 
 ---
 

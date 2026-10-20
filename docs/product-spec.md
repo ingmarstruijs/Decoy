@@ -105,6 +105,7 @@ Fabricating government IDs, license plates, or banking credentials. See [non-goa
 - Prefer open W3C Web Payments and open-banking relays
 - Counterparty must not receive name or bank account number via Decoy-filled forms
 - Residual linkability via PSP/bank is documented in [threat-model.md](threat-model.md)
+- Adapter details and staging path: [payments.md](payments.md)
 
 ## Retention
 
