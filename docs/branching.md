@@ -5,6 +5,7 @@
 ## Rules (GitHub)
 
 - Pull request required before merge
+- CI must pass: `./gradlew test`, `./gradlew :app:assembleDebug`, `./scripts/check-banned-apis.ps1` (see `.github/workflows/ci.yml`)
 - Force-push to `main` blocked
 - Branch deletion of `main` blocked
 - Conversation resolution required before merge
