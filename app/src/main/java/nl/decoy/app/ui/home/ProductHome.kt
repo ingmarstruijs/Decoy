@@ -95,7 +95,7 @@ fun ProductHome(
             )
             Spacer(Modifier.height(16.dp))
             Text(
-                text = "A context appears when you need it.\nIt leaves when you walk away.",
+                text = "A context appears when you need it.\nIt leaves when you are done.",
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center,

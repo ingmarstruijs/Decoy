@@ -10,19 +10,19 @@ import org.junit.Test
 
 class SessionLifecycleTest {
     @Test
-    fun walkAwayWipesOneShotSession() {
+    fun dismissWipesOneShotSession() {
         val store = InMemorySessionStore()
         val retention = RetentionController(store)
         val resolver = ContextResolver(PluginRegistry(FixtureCatalog.allPlugins()), retention)
         val lifecycle = SessionLifecycle(retention)
         val session = resolver.resolve(DiscoveryInput.Qr(FixtureCatalog.injectedCampsiteQr))!!
         assertEquals(1, store.size())
-        lifecycle.walkAway(session)
+        lifecycle.dismiss(session)
         assertEquals(0, store.size())
     }
 
     @Test
-    fun dismissWipesSession() {
+    fun dismissWipesNfcSession() {
         val store = InMemorySessionStore()
         val retention = RetentionController(store)
         val resolver = ContextResolver(PluginRegistry(FixtureCatalog.allPlugins()), retention)

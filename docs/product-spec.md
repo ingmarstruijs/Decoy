@@ -34,7 +34,7 @@ Interacting with the physical world increasingly requires a unique vendor app, a
 
 | Principle | Product requirement |
 |-----------|---------------------|
-| Contextual transformation | Resolve input → plugin → native UI in milliseconds; dispose on completion or walk-away |
+| Contextual transformation | Resolve input → plugin → native UI in milliseconds; dispose on completion or dismiss |
 | Universal input | Tiered inputs (below); keypad fallback when no tag |
 | Masked identity | Field policy + aliases (below); cooperative proofs later |
 | One-shot / Multi-day | See [data-lifecycle.md](data-lifecycle.md) |

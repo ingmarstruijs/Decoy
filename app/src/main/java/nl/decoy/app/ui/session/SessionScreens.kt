@@ -52,7 +52,6 @@ fun SimpleSessionScreen(
     ui: PluginUiState.Screen,
     onConfirmMultiDay: () -> Unit,
     onCompleteSimple: () -> Unit,
-    onWalkAway: () -> Unit,
     onDismiss: () -> Unit,
 ) {
     val onBg = MaterialTheme.colorScheme.onBackground
@@ -92,11 +91,8 @@ fun SimpleSessionScreen(
                 Text(label)
             }
         }
-        TextButton(onClick = onWalkAway, modifier = Modifier.fillMaxWidth().testTag("walk_away")) {
-            Text("Walk away", color = MaterialTheme.colorScheme.primary)
-        }
         TextButton(onClick = onDismiss, modifier = Modifier.fillMaxWidth().testTag("dismiss_session")) {
-            Text("Dismiss", color = muted)
+            Text("Dismiss", color = MaterialTheme.colorScheme.primary)
         }
     }
 }
@@ -106,7 +102,6 @@ fun OrderSessionScreen(
     session: ResolvedSession,
     form: PluginUiState.OrderForm,
     onPlaceOrder: (MenuItem, Map<String, String>) -> Unit,
-    onWalkAway: () -> Unit,
     onDismiss: () -> Unit,
 ) {
     val onBg = MaterialTheme.colorScheme.onBackground
@@ -213,11 +208,8 @@ fun OrderSessionScreen(
         ) {
             Text(form.primaryActionLabel)
         }
-        TextButton(onClick = onWalkAway, modifier = Modifier.fillMaxWidth().testTag("walk_away")) {
-            Text("Walk away", color = MaterialTheme.colorScheme.primary)
-        }
         TextButton(onClick = onDismiss, modifier = Modifier.fillMaxWidth().testTag("dismiss_session")) {
-            Text("Dismiss", color = muted)
+            Text("Dismiss", color = MaterialTheme.colorScheme.primary)
         }
     }
 }
@@ -228,7 +220,6 @@ fun TimedSessionScreen(
     timed: PluginUiState.TimedSession,
     onStartTimed: (Map<String, String>) -> Boolean,
     onStopTimed: () -> Unit,
-    onWalkAway: () -> Unit,
     onDismiss: () -> Unit,
 ) {
     val onBg = MaterialTheme.colorScheme.onBackground
@@ -326,11 +317,8 @@ fun TimedSessionScreen(
             ) {
                 Text(timed.startLabel)
             }
-            TextButton(onClick = onWalkAway, modifier = Modifier.fillMaxWidth().testTag("walk_away")) {
-                Text("Walk away", color = MaterialTheme.colorScheme.primary)
-            }
             TextButton(onClick = onDismiss, modifier = Modifier.fillMaxWidth().testTag("dismiss_session")) {
-                Text("Dismiss", color = muted)
+                Text("Dismiss", color = MaterialTheme.colorScheme.primary)
             }
         } else {
             Text(

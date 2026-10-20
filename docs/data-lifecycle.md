@@ -25,7 +25,7 @@ One continuous local session for a single activity. Data may persist for minutes
 |------|--------|
 | Storage | Short-lived local state for the **active session** (may touch disk if the process dies mid-ride; encrypted) |
 | Lifetime | From session start until **session end** (see below), not until first payment alone |
-| Wipe triggers | Session end; user dismiss / force-clear; **safety TTL** if the session was abandoned; walk-away only when the activity is already complete |
+| Wipe triggers | Session end; user dismiss / force-clear; **safety TTL** if the session was abandoned |
 | Cloud | None |
 | Session ID | Ephemeral nonce; destroyed on wipe |
 | Auto-destroy | **On by default**; user may pin a live session only while it is still active |
