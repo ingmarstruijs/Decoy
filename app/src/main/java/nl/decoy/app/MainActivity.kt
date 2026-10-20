@@ -6,13 +6,13 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import nl.decoy.app.ui.DecoyAppScreen
 import nl.decoy.app.ui.demo.DemoActions
 import nl.decoy.app.ui.discovery.DiscoveryParse
@@ -34,7 +34,8 @@ class MainActivity : ComponentActivity() {
             DecoyTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-                    color = Color.Transparent,
+                    color = MaterialTheme.colorScheme.background,
+                    contentColor = MaterialTheme.colorScheme.onBackground,
                 ) {
                     var session by remember { mutableStateOf(initial) }
                     var unresolved by remember { mutableStateOf<String?>(null) }

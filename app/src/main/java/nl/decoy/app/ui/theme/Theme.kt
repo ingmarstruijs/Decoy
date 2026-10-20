@@ -14,11 +14,11 @@ import nl.decoy.app.R
 
 private val Ink = Color(0xFF0E1A22)
 private val InkLift = Color(0xFF1A2F38)
-private val Mist = Color(0xFFE8EEF0)
-private val MistDim = Color(0xFFB7C4C9)
-private val Copper = Color(0xFFD4A574)
+private val Mist = Color(0xFFF2F6F7)
+private val MistDim = Color(0xFFC5D0D5)
+private val Copper = Color(0xFFE0B686)
 private val CopperDeep = Color(0xFFB8895A)
-private val Danger = Color(0xFFE07A6A)
+private val Danger = Color(0xFFFFA59A)
 
 val DecoyInk = Ink
 val DecoyInkLift = InkLift
@@ -40,7 +40,7 @@ private val DecoyDarkColors = darkColorScheme(
     onSurfaceVariant = MistDim,
     error = Danger,
     onError = Ink,
-    outline = Color(0xFF3D5560),
+    outline = Color(0xFF6A8590),
 )
 
 private val DecoyTypography = Typography(
@@ -50,54 +50,63 @@ private val DecoyTypography = Typography(
         fontSize = 56.sp,
         lineHeight = 60.sp,
         letterSpacing = (-0.5).sp,
+        color = Mist,
     ),
     headlineMedium = TextStyle(
         fontFamily = Fraunces,
         fontWeight = FontWeight.Medium,
         fontSize = 32.sp,
         lineHeight = 38.sp,
+        color = Mist,
     ),
     titleLarge = TextStyle(
         fontFamily = Fraunces,
         fontWeight = FontWeight.Medium,
         fontSize = 24.sp,
         lineHeight = 30.sp,
+        color = Mist,
     ),
     titleMedium = TextStyle(
         fontFamily = SourceSans,
         fontWeight = FontWeight.SemiBold,
         fontSize = 18.sp,
         lineHeight = 24.sp,
+        color = Mist,
     ),
     bodyLarge = TextStyle(
         fontFamily = SourceSans,
         fontWeight = FontWeight.Normal,
         fontSize = 17.sp,
         lineHeight = 26.sp,
+        color = Mist,
     ),
     bodyMedium = TextStyle(
         fontFamily = SourceSans,
         fontWeight = FontWeight.Normal,
         fontSize = 15.sp,
         lineHeight = 22.sp,
+        color = MistDim,
     ),
     bodySmall = TextStyle(
         fontFamily = SourceSans,
         fontWeight = FontWeight.Normal,
         fontSize = 13.sp,
         lineHeight = 18.sp,
+        color = MistDim,
     ),
     labelLarge = TextStyle(
         fontFamily = SourceSans,
         fontWeight = FontWeight.SemiBold,
         fontSize = 15.sp,
         letterSpacing = 0.3.sp,
+        color = Mist,
     ),
     labelMedium = TextStyle(
         fontFamily = SourceSans,
         fontWeight = FontWeight.Medium,
         fontSize = 12.sp,
         letterSpacing = 0.4.sp,
+        color = MistDim,
     ),
 )
 

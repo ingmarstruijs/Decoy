@@ -11,9 +11,11 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -31,6 +33,20 @@ import nl.decoy.plugins.api.MenuItem
 import nl.decoy.plugins.api.PluginUiState
 
 @Composable
+private fun sessionFieldColors() = OutlinedTextFieldDefaults.colors(
+    focusedTextColor = MaterialTheme.colorScheme.onBackground,
+    unfocusedTextColor = MaterialTheme.colorScheme.onBackground,
+    disabledTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+    focusedBorderColor = MaterialTheme.colorScheme.primary,
+    unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+    disabledBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
+    focusedLabelColor = MaterialTheme.colorScheme.primary,
+    unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+    disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+    cursorColor = MaterialTheme.colorScheme.primary,
+)
+
+@Composable
 fun SimpleSessionScreen(
     session: ResolvedSession,
     ui: PluginUiState.Screen,
@@ -39,6 +55,8 @@ fun SimpleSessionScreen(
     onWalkAway: () -> Unit,
     onDismiss: () -> Unit,
 ) {
+    val onBg = MaterialTheme.colorScheme.onBackground
+    val muted = MaterialTheme.colorScheme.onSurfaceVariant
     val isMultiDay = session.context.attributes["retention"] == "multi-day"
     Column(
         Modifier
@@ -46,12 +64,22 @@ fun SimpleSessionScreen(
             .padding(24.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        Text(ui.title, style = MaterialTheme.typography.headlineMedium, modifier = Modifier.testTag("plugin_title"))
-        Text(ui.body, style = MaterialTheme.typography.bodyLarge, modifier = Modifier.testTag("plugin_body"))
+        Text(
+            ui.title,
+            style = MaterialTheme.typography.headlineMedium,
+            color = onBg,
+            modifier = Modifier.testTag("plugin_title"),
+        )
+        Text(
+            ui.body,
+            style = MaterialTheme.typography.bodyLarge,
+            color = muted,
+            modifier = Modifier.testTag("plugin_body"),
+        )
         Text(
             text = "Session ${session.session.sessionId.take(8)}…",
             style = MaterialTheme.typography.labelMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            color = muted,
         )
         Spacer(Modifier.height(8.dp))
         ui.primaryActionLabel?.let { label ->
@@ -65,10 +93,10 @@ fun SimpleSessionScreen(
             }
         }
         TextButton(onClick = onWalkAway, modifier = Modifier.fillMaxWidth().testTag("walk_away")) {
-            Text("Walk away")
+            Text("Walk away", color = MaterialTheme.colorScheme.primary)
         }
         TextButton(onClick = onDismiss, modifier = Modifier.fillMaxWidth().testTag("dismiss_session")) {
-            Text("Dismiss")
+            Text("Dismiss", color = muted)
         }
     }
 }
@@ -81,6 +109,8 @@ fun OrderSessionScreen(
     onWalkAway: () -> Unit,
     onDismiss: () -> Unit,
 ) {
+    val onBg = MaterialTheme.colorScheme.onBackground
+    val muted = MaterialTheme.colorScheme.onSurfaceVariant
     var selected by remember { mutableStateOf(form.menu.firstOrNull()) }
     var pitch by remember {
         mutableStateOf(
@@ -98,9 +128,14 @@ fun OrderSessionScreen(
             .padding(24.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
-        Text(form.title, style = MaterialTheme.typography.headlineMedium, modifier = Modifier.testTag("plugin_title"))
-        Text(form.subtitle, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        Text("Choose", style = MaterialTheme.typography.titleMedium)
+        Text(
+            form.title,
+            style = MaterialTheme.typography.headlineMedium,
+            color = onBg,
+            modifier = Modifier.testTag("plugin_title"),
+        )
+        Text(form.subtitle, style = MaterialTheme.typography.bodyMedium, color = muted)
+        Text("Choose", style = MaterialTheme.typography.titleMedium, color = onBg)
         form.menu.forEach { item ->
             val mark = if (selected?.id == item.id) "✓ " else ""
             OutlinedButton(
@@ -110,7 +145,7 @@ fun OrderSessionScreen(
                 Text("$mark${item.name} — €${"%.2f".format(item.priceCents / 100.0)}")
             }
         }
-        Text("What Decoy sends", style = MaterialTheme.typography.titleMedium)
+        Text("What Decoy sends", style = MaterialTheme.typography.titleMedium, color = onBg)
         form.fields.forEach { field ->
             when (field.kind) {
                 FieldKind.Needed -> {
@@ -119,6 +154,7 @@ fun OrderSessionScreen(
                             value = pitch,
                             onValueChange = { pitch = it },
                             label = { Text(field.label) },
+                            colors = sessionFieldColors(),
                             modifier = Modifier.fillMaxWidth().testTag("field_${field.id}"),
                         )
                     } else if (field.id == "notes") {
@@ -126,14 +162,19 @@ fun OrderSessionScreen(
                             value = notes,
                             onValueChange = { notes = it },
                             label = { Text(field.label) },
+                            colors = sessionFieldColors(),
                             modifier = Modifier.fillMaxWidth().testTag("field_notes"),
                         )
                     } else {
-                        Text("• ${field.label}", style = MaterialTheme.typography.bodySmall)
+                        Text("• ${field.label}", style = MaterialTheme.typography.bodySmall, color = muted)
                     }
                 }
                 FieldKind.ContactAlias ->
-                    Text("• ${field.label}: one-time alias", style = MaterialTheme.typography.bodySmall)
+                    Text(
+                        "• ${field.label}: one-time alias",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = muted,
+                    )
                 FieldKind.PayElsewhere ->
                     Text(
                         "• ${field.label}: paid separately — never typed here",
@@ -141,9 +182,17 @@ fun OrderSessionScreen(
                         color = MaterialTheme.colorScheme.error,
                     )
                 FieldKind.Omit ->
-                    Text("• ${field.label}: omitted", style = MaterialTheme.typography.bodySmall)
+                    Text(
+                        "• ${field.label}: omitted",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = muted,
+                    )
                 FieldKind.ConsentRequired ->
-                    Text("• ${field.label}: only with your consent", style = MaterialTheme.typography.bodySmall)
+                    Text(
+                        "• ${field.label}: only with your consent",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = muted,
+                    )
             }
         }
         Spacer(Modifier.height(8.dp))
@@ -165,10 +214,10 @@ fun OrderSessionScreen(
             Text(form.primaryActionLabel)
         }
         TextButton(onClick = onWalkAway, modifier = Modifier.fillMaxWidth().testTag("walk_away")) {
-            Text("Walk away")
+            Text("Walk away", color = MaterialTheme.colorScheme.primary)
         }
         TextButton(onClick = onDismiss, modifier = Modifier.fillMaxWidth().testTag("dismiss_session")) {
-            Text("Dismiss")
+            Text("Dismiss", color = muted)
         }
     }
 }
@@ -182,6 +231,8 @@ fun TimedSessionScreen(
     onWalkAway: () -> Unit,
     onDismiss: () -> Unit,
 ) {
+    val onBg = MaterialTheme.colorScheme.onBackground
+    val muted = MaterialTheme.colorScheme.onSurfaceVariant
     var running by remember(session.session.sessionId) { mutableStateOf(false) }
     var plate by remember(session.session.sessionId) { mutableStateOf("") }
     var plateConsent by remember(session.session.sessionId) { mutableStateOf(false) }
@@ -192,11 +243,17 @@ fun TimedSessionScreen(
             .padding(24.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
-        Text(timed.title, style = MaterialTheme.typography.headlineMedium, modifier = Modifier.testTag("plugin_title"))
-        Text(timed.subtitle, style = MaterialTheme.typography.bodyMedium)
+        Text(
+            timed.title,
+            style = MaterialTheme.typography.headlineMedium,
+            color = onBg,
+            modifier = Modifier.testTag("plugin_title"),
+        )
+        Text(timed.subtitle, style = MaterialTheme.typography.bodyMedium, color = muted)
         Text(
             text = "${timed.tariffLabel} · €${"%.2f".format(timed.amountCents / 100.0)}",
             style = MaterialTheme.typography.bodySmall,
+            color = muted,
             modifier = Modifier.testTag("tariff_label"),
         )
         if (!running) {
@@ -207,20 +264,34 @@ fun TimedSessionScreen(
                             Checkbox(
                                 checked = plateConsent,
                                 onCheckedChange = { plateConsent = it },
+                                colors = CheckboxDefaults.colors(
+                                    checkedColor = MaterialTheme.colorScheme.primary,
+                                    uncheckedColor = muted,
+                                    checkmarkColor = MaterialTheme.colorScheme.onPrimary,
+                                ),
                                 modifier = Modifier.testTag("consent_${field.id}"),
                             )
-                            Text("I consent to send my ${field.label.lowercase()}")
+                            Text(
+                                "I consent to send my ${field.label.lowercase()}",
+                                color = onBg,
+                                style = MaterialTheme.typography.bodyMedium,
+                            )
                         }
                         OutlinedTextField(
                             value = plate,
                             onValueChange = { plate = it },
                             enabled = plateConsent,
                             label = { Text(field.label) },
+                            colors = sessionFieldColors(),
                             modifier = Modifier.fillMaxWidth().testTag("field_${field.id}"),
                         )
                     }
                     FieldKind.ContactAlias ->
-                        Text("• ${field.label}: one-time alias", style = MaterialTheme.typography.bodySmall)
+                        Text(
+                            "• ${field.label}: one-time alias",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = muted,
+                        )
                     FieldKind.PayElsewhere ->
                         Text(
                             "• ${field.label}: paid separately",
@@ -228,9 +299,17 @@ fun TimedSessionScreen(
                             color = MaterialTheme.colorScheme.error,
                         )
                     FieldKind.Omit ->
-                        Text("• ${field.label}: omitted", style = MaterialTheme.typography.bodySmall)
+                        Text(
+                            "• ${field.label}: omitted",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = muted,
+                        )
                     FieldKind.Needed ->
-                        Text("• ${field.label}", style = MaterialTheme.typography.bodySmall)
+                        Text(
+                            "• ${field.label}",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = muted,
+                        )
                 }
             }
             Button(
@@ -248,10 +327,10 @@ fun TimedSessionScreen(
                 Text(timed.startLabel)
             }
             TextButton(onClick = onWalkAway, modifier = Modifier.fillMaxWidth().testTag("walk_away")) {
-                Text("Walk away")
+                Text("Walk away", color = MaterialTheme.colorScheme.primary)
             }
             TextButton(onClick = onDismiss, modifier = Modifier.fillMaxWidth().testTag("dismiss_session")) {
-                Text("Dismiss")
+                Text("Dismiss", color = muted)
             }
         } else {
             Text(
