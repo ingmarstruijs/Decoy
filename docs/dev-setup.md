@@ -48,9 +48,9 @@ adb shell am start -n nl.decoy.app.debug/nl.decoy.app.MainActivity --es nl.decoy
 adb shell am start -n nl.decoy.app.debug/nl.decoy.app.MainActivity --es nl.decoy.app.extra.ZONE_CODE "STAY42"
 ```
 
-Or use the in-app keypad (`CAMP42` / `STAY42` / `T7` / `4021`) and NFC inject buttons.
+Or use the in-app **Debug test lab** (scenario cards). Step-by-step: [manual-test-lab.md](manual-test-lab.md).
 
-3. Orders: pick a menu item → **Pay & order** → session wiped. Stay: **Confirm stay** writes encrypted Multi-day vault. **Walk away** wipes One-shot without completing.
+3. Follow the on-screen **Next** hint. Orders: **Pay & order** → wipe. Stay: **Confirm stay** → vault. **Walk away** wipes without finishing.
 
 ## Modules
 

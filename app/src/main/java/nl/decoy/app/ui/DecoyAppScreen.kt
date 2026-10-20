@@ -1,7 +1,10 @@
 package nl.decoy.app.ui
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -10,10 +13,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -46,8 +52,6 @@ fun DecoyAppScreen(
     onWalkAway: () -> Unit,
     onDismiss: () -> Unit,
 ) {
-    var zoneCode by remember { mutableStateOf("") }
-
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -60,97 +64,21 @@ fun DecoyAppScreen(
             style = MaterialTheme.typography.headlineMedium,
             modifier = Modifier.testTag("app_title"),
         )
-        Text(
-            text = "Phase 2 — NFC, keypad, Multi-day vault",
-            style = MaterialTheme.typography.bodyMedium,
-        )
-
-        if (lastOutcome != null) {
-            Text(
-                text = "Last payment: ${lastOutcome.payment.status}" +
-                    (lastOutcome.payment.message?.let { " — $it" } ?: ""),
-                style = MaterialTheme.typography.bodySmall,
-                modifier = Modifier.testTag("last_payment"),
-            )
-        }
-        if (vaultStatus != null) {
-            Text(
-                text = vaultStatus,
-                style = MaterialTheme.typography.bodySmall,
-                modifier = Modifier.testTag("vault_status"),
-            )
-        }
 
         if (session == null) {
-            Text(
-                text = "No active session. Use keypad, NFC inject, or QR fixtures.",
-                style = MaterialTheme.typography.bodyLarge,
+            DebugHome(
+                lastOutcome = lastOutcome,
+                vaultStatus = vaultStatus,
+                onInjectHelloQr = onInjectHelloQr,
+                onInjectCampsiteQr = onInjectCampsiteQr,
+                onInjectTerraceQr = onInjectTerraceQr,
+                onInjectCampsiteNfc = onInjectCampsiteNfc,
+                onInjectStayNfc = onInjectStayNfc,
+                onInjectStayQr = onInjectStayQr,
+                onSubmitZone = onSubmitZone,
             )
-            OutlinedTextField(
-                value = zoneCode,
-                onValueChange = { zoneCode = it },
-                label = { Text("Zone / short code") },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .testTag("zone_keypad"),
-            )
-            Button(
-                onClick = { onSubmitZone(zoneCode) },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .testTag("submit_zone"),
-            ) {
-                Text("Resolve zone (CAMP42 / STAY42 / T7 / 4021)")
-            }
-            Button(
-                onClick = onInjectCampsiteNfc,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .testTag("inject_campsite_nfc"),
-            ) {
-                Text("Inject campsite NFC")
-            }
-            Button(
-                onClick = onInjectStayNfc,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .testTag("inject_stay_nfc"),
-            ) {
-                Text("Inject stay NFC (Multi-day)")
-            }
-            Button(
-                onClick = onInjectCampsiteQr,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .testTag("inject_campsite_qr"),
-            ) {
-                Text("Inject campsite order QR")
-            }
-            Button(
-                onClick = onInjectTerraceQr,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .testTag("inject_terrace_qr"),
-            ) {
-                Text("Inject terrace table QR")
-            }
-            Button(
-                onClick = onInjectStayQr,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .testTag("inject_stay_qr"),
-            ) {
-                Text("Inject campsite stay QR")
-            }
-            OutlinedButton(
-                onClick = onInjectHelloQr,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .testTag("inject_hello_qr"),
-            ) {
-                Text("Inject hello fixture QR")
-            }
         } else {
+            ActiveSessionBanner(session)
             when (val ui = session.ui) {
                 is PluginUiState.Screen -> {
                     Text(
@@ -166,6 +94,15 @@ fun DecoyAppScreen(
                     SessionFooter(session.session.sessionId)
                     Spacer(Modifier.height(8.dp))
                     val isStay = session.context.attributes["retention"] == "multi-day"
+                    Text(
+                        text = if (isStay) {
+                            "Next: tap Confirm stay — pitch goes into the encrypted Multi-day vault, then this session ends."
+                        } else {
+                            "Next: tap the primary action, or Walk away to wipe without finishing."
+                        },
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.primary,
+                    )
                     val actionLabel = ui.primaryActionLabel
                     if (actionLabel != null) {
                         Button(
@@ -183,18 +120,23 @@ fun DecoyAppScreen(
                             .fillMaxWidth()
                             .testTag("walk_away"),
                     ) {
-                        Text("Walk away (wipe)")
+                        Text("Walk away — wipe session, do nothing else")
                     }
-                    OutlinedButton(
+                    TextButton(
                         onClick = onDismiss,
                         modifier = Modifier
                             .fillMaxWidth()
                             .testTag("dismiss_session"),
                     ) {
-                        Text("Dismiss / wipe")
+                        Text("Dismiss")
                     }
                 }
                 is PluginUiState.OrderForm -> {
+                    Text(
+                        text = "Next: pick a menu item → Pay & order. Watch field policy (alias / IBAN blocked / home omitted).",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.primary,
+                    )
                     OrderFormContent(
                         sessionId = session.session.sessionId,
                         form = ui,
@@ -209,6 +151,222 @@ fun DecoyAppScreen(
                     OutlinedButton(onClick = onDismiss) { Text("Dismiss") }
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun DebugHome(
+    lastOutcome: OrderOutcome?,
+    vaultStatus: String?,
+    onInjectHelloQr: () -> Unit,
+    onInjectCampsiteQr: () -> Unit,
+    onInjectTerraceQr: () -> Unit,
+    onInjectCampsiteNfc: () -> Unit,
+    onInjectStayNfc: () -> Unit,
+    onInjectStayQr: () -> Unit,
+    onSubmitZone: (String) -> Unit,
+) {
+    var zoneCode by remember { mutableStateOf("") }
+
+    Card(
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Text("Debug test lab", style = MaterialTheme.typography.titleMedium)
+            Text(
+                text = "There is no real camera or NFC here. Each scenario below fakes a scan " +
+                    "and opens the matching Decoy flow. Pick one story and follow the on-screen “Next” hint.",
+                style = MaterialTheme.typography.bodyMedium,
+            )
+        }
+    }
+
+    if (lastOutcome != null || vaultStatus != null) {
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .testTag("result_card"),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.secondaryContainer,
+            ),
+        ) {
+            Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                Text("Last result", style = MaterialTheme.typography.titleSmall)
+                if (lastOutcome != null) {
+                    Text(
+                        text = "Payment: ${lastOutcome.payment.status}" +
+                            (lastOutcome.payment.message?.let { " — $it" } ?: "") +
+                            if (lastOutcome.completed) " · session wiped" else " · session still open",
+                        modifier = Modifier.testTag("last_payment"),
+                    )
+                    lastOutcome.submission?.let { sub ->
+                        Text("Kept: ${sub.outbound.keys.joinToString()}")
+                        Text("Aliased: ${sub.aliasedFieldIds.joinToString()}")
+                        Text("Blocked pay fields: ${sub.payElsewhereFieldIds.joinToString()}")
+                        Text("Omitted: ${sub.omittedFieldIds.joinToString()}")
+                    }
+                }
+                if (vaultStatus != null) {
+                    Text(vaultStatus, modifier = Modifier.testTag("vault_status"))
+                }
+            }
+        }
+    }
+
+    Text("Scenarios", style = MaterialTheme.typography.titleMedium)
+
+    ScenarioCard(
+        title = "1. Campsite sandwich (hero)",
+        goal = "Order food without giving home address or IBAN.",
+        steps = "Simulates QR → order form → fake pay → session wipe.",
+        buttonLabel = "Start campsite order",
+        testTag = "inject_campsite_qr",
+        onClick = onInjectCampsiteQr,
+    )
+    ScenarioCard(
+        title = "2. Terrace table 7",
+        goal = "Same idea at a terrace: keep table id, alias email, block IBAN.",
+        steps = "Simulates table QR → menu → fake pay → wipe.",
+        buttonLabel = "Start terrace order",
+        testTag = "inject_terrace_qr",
+        onClick = onInjectTerraceQr,
+    )
+    ScenarioCard(
+        title = "3. Multi-day campsite stay",
+        goal = "Save pitch in encrypted vault for several days.",
+        steps = "Simulates stay QR → Confirm stay → vault holds pitch; One-shot UI session ends.",
+        buttonLabel = "Start campsite stay",
+        testTag = "inject_stay_qr",
+        onClick = onInjectStayQr,
+    )
+    ScenarioCard(
+        title = "4. NFC instead of QR",
+        goal = "Same plugins, different input channel (still faked).",
+        steps = "Use when you want to verify NFC discovery without hardware.",
+        buttonLabel = "Fake NFC: campsite order",
+        testTag = "inject_campsite_nfc",
+        onClick = onInjectCampsiteNfc,
+        secondaryLabel = "Fake NFC: campsite stay",
+        secondaryTag = "inject_stay_nfc",
+        onSecondary = onInjectStayNfc,
+    )
+
+    Card(
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Text("5. Zone keypad (no tag)", style = MaterialTheme.typography.titleSmall)
+            Text(
+                text = "Type a short code as if it were painted on a pillar. Tap a chip to fill, then Resolve.",
+                style = MaterialTheme.typography.bodySmall,
+            )
+            @OptIn(ExperimentalLayoutApi::class)
+            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                listOf("CAMP42", "STAY42", "T7", "4021").forEach { code ->
+                    OutlinedButton(
+                        onClick = { zoneCode = code },
+                        modifier = Modifier.testTag("chip_$code"),
+                    ) {
+                        Text(code)
+                    }
+                }
+            }
+            OutlinedTextField(
+                value = zoneCode,
+                onValueChange = { zoneCode = it },
+                label = { Text("Zone code") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag("zone_keypad"),
+            )
+            Button(
+                onClick = { onSubmitZone(zoneCode) },
+                enabled = zoneCode.isNotBlank(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag("submit_zone"),
+            ) {
+                Text("Resolve zone code")
+            }
+        }
+    }
+
+    TextButton(
+        onClick = onInjectHelloQr,
+        modifier = Modifier
+            .fillMaxWidth()
+            .testTag("inject_hello_qr"),
+    ) {
+        Text("Smoke test: Hello Decoy (Phase 0)")
+    }
+}
+
+@Composable
+private fun ScenarioCard(
+    title: String,
+    goal: String,
+    steps: String,
+    buttonLabel: String,
+    testTag: String,
+    onClick: () -> Unit,
+    secondaryLabel: String? = null,
+    secondaryTag: String? = null,
+    onSecondary: (() -> Unit)? = null,
+) {
+    Card(
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+            Text(title, style = MaterialTheme.typography.titleSmall)
+            Text("Goal: $goal", style = MaterialTheme.typography.bodySmall)
+            Text(steps, style = MaterialTheme.typography.bodySmall)
+            Button(
+                onClick = onClick,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag(testTag),
+            ) {
+                Text(buttonLabel)
+            }
+            if (secondaryLabel != null && onSecondary != null && secondaryTag != null) {
+                OutlinedButton(
+                    onClick = onSecondary,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .testTag(secondaryTag),
+                ) {
+                    Text(secondaryLabel)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun ActiveSessionBanner(session: ResolvedSession) {
+    Card(
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.primaryContainer,
+        ),
+        modifier = Modifier
+            .fillMaxWidth()
+            .testTag("active_session_banner"),
+    ) {
+        Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+            Text("Active test session", style = MaterialTheme.typography.titleSmall)
+            Text(
+                text = "Plugin: ${session.plugin.id}",
+                style = MaterialTheme.typography.bodySmall,
+            )
+            Text(
+                text = "You are inside a faked scan. Finish the flow or Walk away to wipe.",
+                style = MaterialTheme.typography.bodySmall,
+            )
         }
     }
 }
@@ -236,7 +394,7 @@ private fun OrderFormContent(
     Text(form.subtitle, style = MaterialTheme.typography.bodyMedium)
     SessionFooter(sessionId)
 
-    Text("Menu", style = MaterialTheme.typography.titleMedium)
+    Text("1. Choose menu item", style = MaterialTheme.typography.titleMedium)
     form.menu.forEach { item ->
         val selectedMark = if (selected?.id == item.id) "✓ " else ""
         OutlinedButton(
@@ -249,7 +407,7 @@ private fun OrderFormContent(
         }
     }
 
-    Text("Fields (policy)", style = MaterialTheme.typography.titleMedium)
+    Text("2. Field policy (what Decoy does with vendor form fields)", style = MaterialTheme.typography.titleMedium)
     form.fields.forEach { field ->
         when (field.kind) {
             FieldKind.Needed -> {
@@ -257,7 +415,7 @@ private fun OrderFormContent(
                     OutlinedTextField(
                         value = pitch,
                         onValueChange = { pitch = it },
-                        label = { Text(field.label) },
+                        label = { Text("${field.label} (kept)") },
                         modifier = Modifier
                             .fillMaxWidth()
                             .testTag("field_${field.id}"),
@@ -266,25 +424,25 @@ private fun OrderFormContent(
                     OutlinedTextField(
                         value = notes,
                         onValueChange = { notes = it },
-                        label = { Text(field.label) },
+                        label = { Text("${field.label} (kept)") },
                         modifier = Modifier
                             .fillMaxWidth()
                             .testTag("field_notes"),
                     )
                 } else {
-                    Text("• ${field.label}: (needed)", style = MaterialTheme.typography.bodySmall)
+                    Text("• ${field.label}: kept if filled", style = MaterialTheme.typography.bodySmall)
                 }
             }
             FieldKind.ContactAlias -> {
                 Text(
-                    "• ${field.label}: → single-use alias (not your inbox)",
+                    "• ${field.label}: replaced with one-time alias (not your real inbox)",
                     style = MaterialTheme.typography.bodySmall,
                     modifier = Modifier.testTag("policy_alias_${field.id}"),
                 )
             }
             FieldKind.PayElsewhere -> {
                 Text(
-                    "• ${field.label}: blocked — pay out-of-band (fake adapter)",
+                    "• ${field.label}: NEVER typed here — fake payment runs separately",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.error,
                     modifier = Modifier.testTag("policy_pay_${field.id}"),
@@ -292,7 +450,7 @@ private fun OrderFormContent(
             }
             FieldKind.Omit -> {
                 Text(
-                    "• ${field.label}: omitted",
+                    "• ${field.label}: dropped (not sent)",
                     style = MaterialTheme.typography.bodySmall,
                     modifier = Modifier.testTag("policy_omit_${field.id}"),
                 )
@@ -301,6 +459,7 @@ private fun OrderFormContent(
     }
 
     Spacer(Modifier.height(8.dp))
+    Text("3. Finish", style = MaterialTheme.typography.titleMedium)
     Button(
         onClick = {
             val item = selected ?: return@Button
@@ -326,15 +485,15 @@ private fun OrderFormContent(
             .fillMaxWidth()
             .testTag("walk_away"),
     ) {
-        Text("Walk away (wipe)")
+        Text("Walk away — wipe without ordering")
     }
-    OutlinedButton(
+    TextButton(
         onClick = onDismiss,
         modifier = Modifier
             .fillMaxWidth()
             .testTag("dismiss_session"),
     ) {
-        Text("Dismiss / wipe")
+        Text("Dismiss")
     }
 }
 
