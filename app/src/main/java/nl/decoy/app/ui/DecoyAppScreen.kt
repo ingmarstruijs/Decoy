@@ -32,13 +32,22 @@ import nl.decoy.plugins.api.PluginUiState
 fun DecoyAppScreen(
     session: ResolvedSession?,
     lastOutcome: OrderOutcome?,
+    vaultStatus: String?,
     onInjectHelloQr: () -> Unit,
     onInjectCampsiteQr: () -> Unit,
     onInjectTerraceQr: () -> Unit,
+    onInjectCampsiteNfc: () -> Unit,
+    onInjectStayNfc: () -> Unit,
+    onInjectStayQr: () -> Unit,
+    onSubmitZone: (String) -> Unit,
     onPlaceOrder: (MenuItem, Map<String, String>) -> Unit,
+    onConfirmStay: () -> Unit,
     onCompleteSimple: () -> Unit,
+    onWalkAway: () -> Unit,
     onDismiss: () -> Unit,
 ) {
+    var zoneCode by remember { mutableStateOf("") }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -52,7 +61,7 @@ fun DecoyAppScreen(
             modifier = Modifier.testTag("app_title"),
         )
         Text(
-            text = "Phase 1 — hero order fixtures (stubs only)",
+            text = "Phase 2 — NFC, keypad, Multi-day vault",
             style = MaterialTheme.typography.bodyMedium,
         )
 
@@ -64,12 +73,51 @@ fun DecoyAppScreen(
                 modifier = Modifier.testTag("last_payment"),
             )
         }
+        if (vaultStatus != null) {
+            Text(
+                text = vaultStatus,
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.testTag("vault_status"),
+            )
+        }
 
         if (session == null) {
             Text(
-                text = "No active session. Inject a fixture QR (emulator, no camera).",
+                text = "No active session. Use keypad, NFC inject, or QR fixtures.",
                 style = MaterialTheme.typography.bodyLarge,
             )
+            OutlinedTextField(
+                value = zoneCode,
+                onValueChange = { zoneCode = it },
+                label = { Text("Zone / short code") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag("zone_keypad"),
+            )
+            Button(
+                onClick = { onSubmitZone(zoneCode) },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag("submit_zone"),
+            ) {
+                Text("Resolve zone (CAMP42 / STAY42 / T7 / 4021)")
+            }
+            Button(
+                onClick = onInjectCampsiteNfc,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag("inject_campsite_nfc"),
+            ) {
+                Text("Inject campsite NFC")
+            }
+            Button(
+                onClick = onInjectStayNfc,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag("inject_stay_nfc"),
+            ) {
+                Text("Inject stay NFC (Multi-day)")
+            }
             Button(
                 onClick = onInjectCampsiteQr,
                 modifier = Modifier
@@ -85,6 +133,14 @@ fun DecoyAppScreen(
                     .testTag("inject_terrace_qr"),
             ) {
                 Text("Inject terrace table QR")
+            }
+            Button(
+                onClick = onInjectStayQr,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag("inject_stay_qr"),
+            ) {
+                Text("Inject campsite stay QR")
             }
             OutlinedButton(
                 onClick = onInjectHelloQr,
@@ -109,16 +165,25 @@ fun DecoyAppScreen(
                     )
                     SessionFooter(session.session.sessionId)
                     Spacer(Modifier.height(8.dp))
+                    val isStay = session.context.attributes["retention"] == "multi-day"
                     val actionLabel = ui.primaryActionLabel
                     if (actionLabel != null) {
                         Button(
-                            onClick = onCompleteSimple,
+                            onClick = if (isStay) onConfirmStay else onCompleteSimple,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .testTag("complete_session"),
+                                .testTag(if (isStay) "confirm_stay" else "complete_session"),
                         ) {
                             Text(actionLabel)
                         }
+                    }
+                    OutlinedButton(
+                        onClick = onWalkAway,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .testTag("walk_away"),
+                    ) {
+                        Text("Walk away (wipe)")
                     }
                     OutlinedButton(
                         onClick = onDismiss,
@@ -135,6 +200,7 @@ fun DecoyAppScreen(
                         form = ui,
                         defaults = session.context.attributes,
                         onPlaceOrder = onPlaceOrder,
+                        onWalkAway = onWalkAway,
                         onDismiss = onDismiss,
                     )
                 }
@@ -153,6 +219,7 @@ private fun OrderFormContent(
     form: PluginUiState.OrderForm,
     defaults: Map<String, String>,
     onPlaceOrder: (MenuItem, Map<String, String>) -> Unit,
+    onWalkAway: () -> Unit,
     onDismiss: () -> Unit,
 ) {
     var selected by remember { mutableStateOf(form.menu.firstOrNull()) }
@@ -252,6 +319,14 @@ private fun OrderFormContent(
             .testTag("place_order"),
     ) {
         Text(form.primaryActionLabel)
+    }
+    OutlinedButton(
+        onClick = onWalkAway,
+        modifier = Modifier
+            .fillMaxWidth()
+            .testTag("walk_away"),
+    ) {
+        Text("Walk away (wipe)")
     }
     OutlinedButton(
         onClick = onDismiss,

@@ -154,9 +154,9 @@ Names may be refined at implement time; responsibilities must not blur.
 
 ### Exit criteria
 
-- [ ] QR, URL, NFC, keypad all resolve into plugins
-- [ ] Multi-day vault encrypts and TTL-wipes
-- [ ] Dispose on walk-away/dismiss verified
+- [x] QR, URL, NFC, keypad all resolve into plugins
+- [x] Multi-day vault encrypts and TTL-wipes
+- [x] Dispose on walk-away/dismiss verified
 
 ---
 

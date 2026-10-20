@@ -18,6 +18,10 @@ class CampsiteOrderPlugin : CapabilityPlugin {
     override fun matches(input: DiscoveryInput): Boolean = when (input) {
         is DiscoveryInput.Qr -> input.payload == FIXTURE_QR || input.payload.startsWith("decoy://campsite/order")
         is DiscoveryInput.Url -> input.url.contains("campsite") && input.url.contains("order")
+        is DiscoveryInput.Nfc ->
+            input.payload == FIXTURE_NFC || input.payload.startsWith("decoy://campsite/order")
+        is DiscoveryInput.ZoneCode ->
+            input.code.equals("CAMP42", ignoreCase = true) || input.code == "4021"
         else -> false
     }
 
@@ -46,6 +50,7 @@ class CampsiteOrderPlugin : CapabilityPlugin {
 
     companion object {
         const val FIXTURE_QR = "decoy://campsite/order?fixture=1"
+        const val FIXTURE_NFC = "decoy://campsite/order?nfc=1"
 
         /** Mirrors a hostile vendor form asking for everything. */
         val VENDOR_FORM_SCHEMA = listOf(

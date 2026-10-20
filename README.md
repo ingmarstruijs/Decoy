@@ -40,7 +40,7 @@ Banned proprietary / advertising-ID references (PowerShell / `pwsh`):
 adb shell am start -n nl.decoy.app.debug/nl.decoy.app.MainActivity -a nl.decoy.app.INJECT_QR --es nl.decoy.app.extra.QR_PAYLOAD "decoy://campsite/order?fixture=1"
 ```
 
-Or tap **Inject campsite order QR** in the app. Pick a menu item → **Pay & order** (fake payment); session wipes. IBAN/home are blocked/omitted.
+Or use in-app keypad (`CAMP42` / `STAY42` / `T7`), NFC inject, or campsite QR. Orders wipe after fake pay; stay confirms into encrypted Multi-day vault; **Walk away** disposes One-shot.
 
 ### Modules
 
