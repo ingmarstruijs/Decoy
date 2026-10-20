@@ -142,17 +142,20 @@ Generic ticket or loyalty **import-and-show** wallets are out of scope — see [
 
 ---
 
-## Fixture coverage (Phase 3)
+## Fixture coverage (Phase 3–5)
 
-One-shot v1 cases above (except shared bike — later) have fixture plugins and lab scenarios:
+One-shot v1 cases above (except shared bike — later) and Multi-day v1 have fixture plugins and lab scenarios:
 
 | Use case | Fixture / trigger |
 |----------|-------------------|
-| Campsite food / terrace | Phase 1 plugins + `CAMP42` / `T7` |
-| Parking | `fixture.parking.session` — QR / NFC / zone `4021` |
-| Captive portal | `fixture.captive.portal` — QR / `WIFI` |
+| Campsite food / terrace | Phase 1 plugins + `CAMP42` / `T7` + BLE/UWB inject |
+| Parking | `fixture.parking.session` — QR / NFC / zone `4021` / BLE |
+| Captive portal | `fixture.captive.portal` — QR / `WIFI` / BLE / HTML marker URL |
 | EV charging | `fixture.ev.charging` — QR / `EV1` |
 | Vending / locker / laundry | `fixture.vending.pay` — QR / `VEND1` |
+| Campsite stay | `fixture.campsite.stay` — QR / NFC / `STAY42` / BLE |
+| Cabin short-stay | `fixture.cabin.stay` — QR / `CABIN3` / BLE |
+| Festival pass | `fixture.festival.pass` — QR / `PASS1` / BLE |
 
 Walkthrough: [manual-test-lab.md](manual-test-lab.md). Checklist: [e2e-testability.md](e2e-testability.md).
 

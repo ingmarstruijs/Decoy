@@ -42,10 +42,6 @@ gh pr create --base main --title "…" --body "…"
 
 5. Merge via GitHub (squash preferred for small focused PRs), then delete the remote branch.
 
-## Current work
-
-Phase 0 foundation work lives on `feature/phase-0-foundation` until merged via PR.
-
 ## Related
 
 - [Dev setup](dev-setup.md)

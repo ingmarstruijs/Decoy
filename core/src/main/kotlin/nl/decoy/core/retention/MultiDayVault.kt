@@ -35,6 +35,7 @@ interface MultiDayVault {
     fun wipeExpired(now: Instant): Int
     fun clearAll()
     fun size(): Int
+    fun ids(): Set<String>
 }
 
 /**
@@ -101,6 +102,8 @@ class AesGcmMultiDayVault(
 
     override fun size(): Int = sealed.size
 
+    override fun ids(): Set<String> = sealed.keys.toSet()
+
     companion object {
         private const val TRANSFORMATION = "AES/GCM/NoPadding"
 
@@ -150,4 +153,12 @@ class MultiDayService(
     }
 
     fun tickAutoDestroy(): Int = vault.wipeExpired(clock.instant())
+
+    /** Active (non-expired) Multi-day records for product home. */
+    fun listActive(): List<MultiDayRecord> {
+        val now = clock.instant()
+        return vault.ids().mapNotNull { id ->
+            vault.get(id)?.takeUnless { it.isExpired(now) }
+        }
+    }
 }

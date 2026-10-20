@@ -7,15 +7,17 @@ Decoy pays **out-of-band**. Vendor HTML/forms never receive IBAN, card PAN, or b
 | Backend | Id | When |
 |---------|-----|------|
 | `FakePaymentAdapter` | `fake` | **CI and app default** |
-| `OpenBankingRelayAdapter` + staging client | `open-banking-relay` | Debug lab / manual staging verification |
+| `OpenBankingRelayAdapter` + staging client | `open-banking-relay` | Debug Demo / manual staging verification |
 
 Both implement `PaymentPort`. The Compose shell and order/timed flows call the same port; only the backend switches.
 
 ### Staging open-banking relay
 
-Phase 4 ships an **in-process** staging relay that models authorize → settle (Web Payments / open-banking shape). It does **not** talk to a production PSP. A future HTTP `PaymentRelayClient` can point at a real staging URL without changing the port.
+Phase 4 ships an **in-process** staging relay that models authorize → settle (Web Payments / open-banking shape). It does **not** talk to a production PSP.
 
-Debug lab: **Switch payment backend**.  
+**Phase 4b** adds a real HTTP relay / open-banking path behind the same port; CI stays Fake-default. See [development-phases.md](development-phases.md).
+
+Debug Demo: **Switch payment backend**.  
 adb: `--es nl.decoy.app.extra.PAYMENT_BACKEND staging`
 
 ## Invariants
@@ -29,4 +31,4 @@ adb: `--es nl.decoy.app.extra.PAYMENT_BACKEND staging`
 
 - [Product spec — Payments](product-spec.md#payments)
 - [Threat model](threat-model.md)
-- [Manual test lab](manual-test-lab.md)
+- [Manual testing](manual-test-lab.md)

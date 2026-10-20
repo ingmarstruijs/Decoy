@@ -65,6 +65,14 @@ object FixtureCatalog {
     val injectedPortalQr = CaptivePortalPlugin.FIXTURE_QR
     val injectedEvQr = EvChargingPlugin.FIXTURE_QR
     val injectedVendingQr = VendingPlugin.FIXTURE_QR
+    val injectedCabinQr = ShortStayCabinPlugin.FIXTURE_QR
+    val injectedFestivalQr = FestivalPassPlugin.FIXTURE_QR
+    val injectedBleCampsiteOrder = AmbientFixtures.BLE_CAMPSITE_ORDER
+    val injectedBleStay = AmbientFixtures.BLE_CAMPSITE_STAY
+    val injectedBlePortal = AmbientFixtures.BLE_PORTAL
+    val injectedBleCabin = AmbientFixtures.BLE_CABIN
+    val injectedBleFestival = AmbientFixtures.BLE_FESTIVAL
+    val injectedUwbCampsiteOrder = AmbientFixtures.UWB_CAMPSITE_ORDER
 
     fun allPlugins() = listOf(
         HelloFixturePlugin(),
@@ -75,5 +83,7 @@ object FixtureCatalog {
         CaptivePortalPlugin(),
         EvChargingPlugin(),
         VendingPlugin(),
+        ShortStayCabinPlugin(),
+        FestivalPassPlugin(),
     )
 }

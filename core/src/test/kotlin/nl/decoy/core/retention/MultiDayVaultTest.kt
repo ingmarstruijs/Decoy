@@ -51,4 +51,16 @@ class MultiDayVaultTest {
         assertNull(service.get("x"))
         assertEquals(0, vault.size())
     }
+
+    @Test
+    fun listActiveReturnsNonExpired() {
+        val vault = AesGcmMultiDayVault(AesGcmMultiDayVault.generateKey())
+        val service = MultiDayService(vault)
+        service.startStay("a", "cabin", "{}")
+        service.startStay("b", "festival-pass", "{}")
+        assertEquals(2, service.listActive().size)
+        service.end("a")
+        assertEquals(1, service.listActive().size)
+        assertEquals("b", service.listActive().single().id)
+    }
 }

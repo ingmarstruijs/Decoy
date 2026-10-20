@@ -33,26 +33,29 @@ Banned proprietary / advertising-ID references (PowerShell / `pwsh`):
 ./scripts/check-banned-apis.ps1
 ```
 
-### Emulator smoke (inject QR, no camera)
+### Emulator / device smoke
 
 ```bash
 ./gradlew :app:installDebug
-adb shell am start -n nl.decoy.app.debug/nl.decoy.app.MainActivity -a nl.decoy.app.INJECT_QR --es nl.decoy.app.extra.QR_PAYLOAD "decoy://campsite/order?fixture=1"
 ```
 
-Or use in-app keypad (`CAMP42` / `STAY42` / `T7`), NFC inject, or campsite QR. Orders wipe after fake pay; stay confirms into encrypted Multi-day vault; **Walk away** disposes One-shot.
+Product home: **Scan**, **Zone or link**, or (debug) **Demo fixtures**. Without a camera:
+
+```bash
+adb shell am start -n nl.decoy.app.debug/nl.decoy.app.MainActivity --es nl.decoy.app.extra.QR_PAYLOAD "decoy://campsite/order?fixture=1"
+```
+
+Printable public samples: [`fixtures/public-qr/`](fixtures/public-qr/). Docs: [`docs/dev-setup.md`](docs/dev-setup.md), [`docs/manual-test-lab.md`](docs/manual-test-lab.md).
 
 ### Modules
 
 | Module | Role |
 |--------|------|
-| `:app` | Compose shell + debug inject entry |
-| `:core` | ContextResolver + retention |
+| `:app` | Product shell, FOSS QR scan, Demo (debug) |
+| `:core` | ContextResolver, retention, payments, Multi-day vault |
 | `:privacy-net` | OkHttp privacy defaults + ID bans |
 | `:plugins-api` | Plugin contract |
-| `:fixtures` | Deterministic plugins / payloads for CI |
-
-More detail: [`docs/dev-setup.md`](docs/dev-setup.md).
+| `:fixtures` | Fixture plugins + public-qr samples |
 
 ### Branches
 

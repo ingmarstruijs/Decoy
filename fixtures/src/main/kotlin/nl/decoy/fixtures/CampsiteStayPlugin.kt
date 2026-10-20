@@ -21,7 +21,10 @@ class CampsiteStayPlugin : CapabilityPlugin {
             input.payload.startsWith("decoy://campsite/stay") || input.payload == FIXTURE_NFC
         is DiscoveryInput.ZoneCode ->
             input.code.equals("STAY42", ignoreCase = true)
-        else -> false
+        is DiscoveryInput.Ble ->
+            AmbientFixtures.matchesAmbient(input.advertisement, "campsite.stay")
+        is DiscoveryInput.Uwb ->
+            AmbientFixtures.matchesAmbient(input.advertisement, "campsite.stay")
     }
 
     override fun resolve(input: DiscoveryInput): PluginContext {
@@ -30,7 +33,8 @@ class CampsiteStayPlugin : CapabilityPlugin {
             is DiscoveryInput.Url -> input.url
             is DiscoveryInput.Nfc -> input.payload
             is DiscoveryInput.ZoneCode -> "decoy://campsite/stay?pitch=42"
-            else -> ""
+            is DiscoveryInput.Ble -> input.advertisement
+            is DiscoveryInput.Uwb -> input.advertisement
         }
         val pitch = Regex("pitch=(\\w+)").find(raw)?.groupValues?.getOrNull(1) ?: "42"
         return PluginContext(
@@ -39,7 +43,9 @@ class CampsiteStayPlugin : CapabilityPlugin {
             attributes = mapOf(
                 "pitch" to pitch,
                 "stayId" to "stay-$pitch",
+                "kind" to "campsite",
                 "retention" to "multi-day",
+                "vaultPayload" to """{"pitch":"$pitch"}""",
             ),
         )
     }

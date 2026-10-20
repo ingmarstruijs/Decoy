@@ -16,7 +16,7 @@ Aligned with [product-spec.md](product-spec.md), [use-cases.md](use-cases.md), [
 
 ## Phase overview
 
-After **Phase 0 (Foundation)**, **Phase 1** proves the core with the campsite/terrace hero order flow on fixtures. Later phases harden inputs, expand One-shot fixtures, add real payments, Multi-day surfaces, then F-Droid release.
+After **Phase 0 (Foundation)**, **Phase 1** proves the core with the campsite/terrace hero order flow on fixtures. Later phases harden inputs, expand One-shot fixtures, add payment ports, Multi-day surfaces, F-Droid posture, then a **product shell** with real QR scan. **Live vendor APIs** wait until Phase 7 (and live payment rail as Phase 4b).
 
 Generic ticket/loyalty import-and-show wallets are **out of scope** (see [non-goals.md](non-goals.md)).
 
@@ -26,11 +26,24 @@ flowchart TB
   P0 --> P1[Phase1_HeroOrder]
   P1 --> P2[Phase2_Inputs_Identity_Retention]
   P2 --> P3[Phase3_OneShot_Catalog]
-  P3 --> P4[Phase4_Payments]
+  P3 --> P4[Phase4_Payments_Staging]
   P4 --> P5[Phase5_Ambient_MultiDay]
   P5 --> P6[Phase6_FDroid_Hardening]
-  P6 --> P7[Phase7_Cooperative_Protocols]
+  P6 --> P6b[Phase6b_ProductShell_PublicQr]
+  P6b --> P4b[Phase4b_LivePayment]
+  P6b --> P7[Phase7_LiveAdapters_Cooperative]
+  P4b --> P7
 ```
+
+## Live API ladder
+
+| Step | Phase | Live network? |
+|------|-------|----------------|
+| Fixtures / inject / Demo sheet | 0–6 | No (CI stubs) |
+| Scan/decode public QR → plugin or Unresolved | 6b | Decode local; vendor API **no** |
+| Real open-banking / Web Payments rail | 4b | Yes — payment only |
+| First venue/capability live adapter | 7 / M5 | Yes — per explicit plugin |
+| Arbitrary retail/parking without open adapter | — | **Out of scope** |
 
 ## Cross-cutting rules
 
@@ -38,7 +51,7 @@ Apply in every phase:
 
 - **Emulator-first:** every feature must be fully exercisable on an AVD with mocks/stubs — see [e2e-testability.md](e2e-testability.md)
 - Fixture/fake backends before any live vendor integration; CI never depends on production vendor hosts
-- Debug/demo harness (or scripted `adb` intents) to start fixture flows with one action
+- Debug **Demo sheet** (or scripted `adb` intents) for fixture inject; product home is scan-first
 - Injected inputs for QR, NFC, BLE (no physical hardware required to merge)
 - No Play Services / Firebase / analytics SDKs in core or plugins
 - Phase exit = features **plus** privacy tests on emulator — not a UI demo alone
@@ -193,13 +206,13 @@ Manual keypad remains a shared trigger variant. Each case meets the acceptance c
 
 ---
 
-## Phase 4 — Payments
+## Phase 4 — Payments (staging)
 
-**Outcome:** one real open payment path behind the same port as the fake.
+**Outcome:** open payment **port** with Fake (CI) + in-process staging open-banking relay.
 
 ### Work
 
-- Payment port already used by the fake; add Web Payments / open-banking relay adapter
+- Payment port already used by the fake; add Web Payments / open-banking relay adapter shape
 - Never paste IBAN/card into vendor HTML forms (product + test invariant)
 - Keep fakes as CI default; staging path for manual verification
 - Residual PSP/bank linkability remains documented in [threat-model.md](threat-model.md)
@@ -214,12 +227,34 @@ Manual keypad remains a shared trigger variant. Each case meets the acceptance c
 
 - Supporting every PSP
 - Claiming payment anonymity stronger than the threat model allows
+- Production PSP settlement (see Phase 4b)
 
 ### Exit criteria
 
 - [x] One staging payment path works for hero order
 - [x] CI remains fake-default and green
 - [x] IBAN-in-form ban enforced in tests
+
+---
+
+## Phase 4b — Live payment rail (after 6b)
+
+**Outcome:** one real open-banking / Web Payments path against a staging or production-capable relay (still out-of-band; no IBAN in vendor forms).
+
+### Work
+
+- HTTP `PaymentRelayClient` (or equivalent) behind the same `PaymentPort`
+- Keep Fake as CI default
+- Document residual PSP linkability
+
+### Non-goals
+
+- Every PSP; claiming anonymity beyond the threat model
+
+### Exit criteria
+
+- [ ] One live/staging payment path completes hero order manually
+- [ ] CI remains fake-default and green
 
 ---
 
@@ -249,15 +284,15 @@ Manual keypad remains a shared trigger variant. Each case meets the acceptance c
 
 ### Exit criteria
 
-- [ ] BLE-triggered resolve works in instrumented tests
-- [ ] Multi-day use cases from [use-cases.md](use-cases.md) meet e2e checklist
-- [ ] No ID leakage across retention classes
+- [x] BLE-triggered resolve works via injected advertisements in CI (same injection model as NFC; hardware optional later)
+- [x] Multi-day use cases from [use-cases.md](use-cases.md) meet e2e checklist
+- [x] No ID leakage across retention classes
 
 ---
 
 ## Phase 6 — F-Droid hardening and release
 
-**Outcome:** first public FOSS release.
+**Outcome:** F-Droid-ready FOSS release posture (publishing may be deferred).
 
 ### Work
 
@@ -265,6 +300,7 @@ Manual keypad remains a shared trigger variant. Each case meets the acceptance c
 - Full proprietary-dependency audit
 - Privacy regression suite as release gate
 - Release notes pointing at manifesto + docs
+- **Publishing to f-droid.org deferred** until maintainers choose a tag — see [fdroid.md](fdroid.md)
 
 ### Tests
 
@@ -274,32 +310,68 @@ Manual keypad remains a shared trigger variant. Each case meets the acceptance c
 ### Non-goals
 
 - Play Store listing as primary distribution
+- Mandatory immediate F-Droid.org inclusion
 
 ### Exit criteria
 
-- [ ] F-Droid-ready artifact published (or submitted)
-- [ ] Release gate checklist signed off
+- [x] F-Droid-ready local artifact path + metadata prepared ([fdroid.md](fdroid.md); publish deferred)
+- [x] Release gate checklist documented ([release-gate.md](release-gate.md))
 
 ---
 
-## Phase 7 — Cooperative protocols (later)
+## Phase 6b — Product shell + public QR
 
-**Outcome:** venues that speak Decoy-native capability claims.
+**Outcome:** end-product home (ready to scan); fixtures behind debug Demo; FOSS camera QR; public samples; Unresolved for unknown URLs.
 
 ### Work
 
-- Venue requests claims such as `paid`, `pitch 42` instead of full PII forms
-- Optional cryptographic / ZKP-style verification **only** where verifiers cooperate
-- Document migration path from UI-overwrite plugins to open adapters
+- Product home: brand hero, Scan, Zone or link, active Multi-day vault strip
+- FOSS QR camera (CameraX + ZXing) — no Play ML Kit
+- Unresolved screen for unknown public payloads (nothing sent to vendor)
+- Public sample PNGs under `fixtures/public-qr/`
+- Demo sheet (debug only) for fixture inject + payment backend toggle
+
+### Tests
+
+- Unit/emulator: paste/inject still green
+- Manual: scan printed public samples → known plugin or Unresolved
 
 ### Non-goals
 
-- Required for first F-Droid release (M4)
+- Live vendor APIs from arbitrary public QR codes
+- Vendor WebView of scanned URLs
+- Play barcode / ML Kit
+
+### Exit criteria
+
+- [x] Product home is the default shell (not a scenario dashboard)
+- [x] Scan or paste resolves known fixtures; unknown → Unresolved
+- [x] Public QR samples documented ([public-qr-samples.md](public-qr-samples.md))
+
+---
+
+## Phase 7 — Live adapters + cooperative protocols
+
+**Outcome:** first live capability adapters and/or venues that speak Decoy-native claims.
+
+### Work
+
+- One cooperating venue or open protocol + explicit plugin (privacy-net on fetches)
+- Optional minimal capability-fetch for **known** hosts only
+- Venue claims such as `paid`, `pitch 42` instead of full PII forms where they cooperate
+- Optional cryptographic / ZKP-style verification **only** where verifiers cooperate
+- Document migration from UI-overwrite fixtures to open adapters
+
+### Non-goals
+
+- Required for first F-Droid-ready posture (M4)
+- Scraping private vendor apps
+- “Every QR on the street works”
 - Fabricating regulated identifiers
 
 ### Exit criteria
 
-- [ ] At least one cooperative fixture + one documented venue protocol sketch
+- [ ] At least one live or cooperative adapter + protocol sketch
 - [ ] Threat model updated if guarantees change
 
 ---
@@ -311,9 +383,10 @@ Manual keypad remains a shared trigger variant. Each case meets the acceptance c
 | **M0** | 0 | Privacy shell + plugin hello |
 | **M1** | 0 + 1 | Hero order on fixtures (campsite + terrace) |
 | **M2** | 2 + 3 | Core inputs + several One-shot fakes |
-| **M3** | 4 + 5 | Payments + Multi-day stays |
-| **M4** | 6 | F-Droid release |
-| **M5** | 7 | Cooperative protocols (post-MVP) |
+| **M3** | 4 + 5 | Staging payments + Multi-day stays |
+| **M4** | 6 | F-Droid-ready posture (publish may be deferred) |
+| **M4b** | 6b | Product shell + public QR scan/Unresolved |
+| **M5** | 4b and/or 7 | First live payment and/or first live venue adapter |
 
 ## Related docs
 
