@@ -46,11 +46,18 @@ adb shell am start -n nl.decoy.app.debug/nl.decoy.app.MainActivity -a nl.decoy.a
 # Phase 2 — NFC / zone keypad (no hardware)
 adb shell am start -n nl.decoy.app.debug/nl.decoy.app.MainActivity --es nl.decoy.app.extra.NFC_PAYLOAD "decoy://campsite/order?nfc=1"
 adb shell am start -n nl.decoy.app.debug/nl.decoy.app.MainActivity --es nl.decoy.app.extra.ZONE_CODE "STAY42"
+
+# Phase 3 — One-shot catalog
+adb shell am start -n nl.decoy.app.debug/nl.decoy.app.MainActivity --es nl.decoy.app.extra.QR_PAYLOAD "decoy://parking/zone=4021?fixture=1"
+adb shell am start -n nl.decoy.app.debug/nl.decoy.app.MainActivity --es nl.decoy.app.extra.ZONE_CODE "4021"
+adb shell am start -n nl.decoy.app.debug/nl.decoy.app.MainActivity --es nl.decoy.app.extra.QR_PAYLOAD "decoy://portal/guest?fixture=1"
+adb shell am start -n nl.decoy.app.debug/nl.decoy.app.MainActivity --es nl.decoy.app.extra.QR_PAYLOAD "decoy://ev/charger=EV-1?fixture=1"
+adb shell am start -n nl.decoy.app.debug/nl.decoy.app.MainActivity --es nl.decoy.app.extra.QR_PAYLOAD "decoy://vending/locker=A3?fixture=1"
 ```
 
 Or use the in-app **Debug test lab** (scenario cards). Step-by-step: [manual-test-lab.md](manual-test-lab.md).
 
-3. Follow the on-screen **Next** hint. Orders: **Pay & order** → wipe. Stay: **Confirm stay** → vault. **Walk away** wipes without finishing.
+3. Follow the on-screen **Next** hint. Orders: **Pay & order** → wipe. Timed (parking/EV): **Pay & start** → **Stop & wipe**. Stay: **Confirm stay** → vault. **Walk away** wipes without finishing.
 
 ## Modules
 

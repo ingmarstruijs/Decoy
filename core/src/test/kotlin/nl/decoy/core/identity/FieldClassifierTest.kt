@@ -44,4 +44,22 @@ class FieldClassifierTest {
         )
         assertFalse(result.outbound.containsKey("notes"))
     }
+
+    @Test
+    fun consentRequiredOmitsWithoutConsentKeepsWithConsent() {
+        val field = nl.decoy.plugins.api.FormField(
+            id = "plate",
+            label = "Plate",
+            kind = FieldKind.ConsentRequired,
+        )
+        val denied = classifier.classify(listOf(field), mapOf("plate" to "AB-1"))
+        assertFalse(denied.outbound.containsKey("plate"))
+        assertTrue(denied.omittedFieldIds.contains("plate"))
+
+        val allowed = classifier.classify(
+            listOf(field),
+            mapOf("plate" to "AB-1", "consent_plate" to "true"),
+        )
+        assertTrue(allowed.outbound["plate"] == "AB-1")
+    }
 }

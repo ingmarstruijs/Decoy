@@ -46,6 +46,15 @@ class FieldClassifier(
                 FieldKind.Omit -> {
                     omitted += field.id
                 }
+                FieldKind.ConsentRequired -> {
+                    val consented = contextualValues["consent_${field.id}"] == "true"
+                    val value = contextualValues[field.id]
+                    if (consented && !value.isNullOrBlank()) {
+                        outbound[field.id] = value
+                    } else {
+                        omitted += field.id
+                    }
+                }
             }
         }
         return ClassifiedSubmission(

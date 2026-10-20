@@ -40,4 +40,13 @@ class ZoneDirectoryTest {
         assertEquals("fixture.campsite.stay", session!!.plugin.id)
         assertEquals("multi-day", session.context.attributes["retention"])
     }
+
+    @Test
+    fun keypad4021ResolvesParking() {
+        val input = zones.resolve("4021")
+        assertNotNull(input)
+        val session = resolver.resolve(input!!)
+        assertEquals("fixture.parking.session", session!!.plugin.id)
+        assertTrue(session.ui is PluginUiState.TimedSession)
+    }
 }

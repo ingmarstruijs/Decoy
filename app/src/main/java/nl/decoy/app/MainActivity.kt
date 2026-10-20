@@ -65,6 +65,18 @@ class MainActivity : ComponentActivity() {
                         onInjectStayQr = {
                             resolve(DiscoveryInput.Qr(FixtureCatalog.injectedStayQr))
                         },
+                        onInjectParkingQr = {
+                            resolve(DiscoveryInput.Qr(FixtureCatalog.injectedParkingQr))
+                        },
+                        onInjectPortalQr = {
+                            resolve(DiscoveryInput.Qr(FixtureCatalog.injectedPortalQr))
+                        },
+                        onInjectEvQr = {
+                            resolve(DiscoveryInput.Qr(FixtureCatalog.injectedEvQr))
+                        },
+                        onInjectVendingQr = {
+                            resolve(DiscoveryInput.Qr(FixtureCatalog.injectedVendingQr))
+                        },
                         onSubmitZone = { code ->
                             val mapped = app.zones.resolve(code)
                                 ?: DiscoveryInput.ZoneCode(code.trim())
@@ -77,6 +89,22 @@ class MainActivity : ComponentActivity() {
                             if (outcome.completed) {
                                 session = null
                             }
+                        },
+                        onStartTimed = { contextual ->
+                            val current = session ?: return@DecoyAppScreen false
+                            val outcome = app.timedFlow.start(current, contextual)
+                            lastOutcome = OrderOutcome(
+                                payment = outcome.payment,
+                                submission = outcome.submission,
+                                completed = false,
+                            )
+                            outcome.running
+                        },
+                        onStopTimed = {
+                            val current = session ?: return@DecoyAppScreen
+                            app.lifecycle.dispose(current, DisposeReason.Completed, success = true)
+                            lastOutcome = lastOutcome?.copy(completed = true)
+                            session = null
                         },
                         onConfirmStay = {
                             val current = session ?: return@DecoyAppScreen
