@@ -2,7 +2,7 @@ package nl.decoy.core
 
 import nl.decoy.core.retention.InMemorySessionStore
 import nl.decoy.core.retention.RetentionController
-import nl.decoy.fixtures.HelloFixturePlugin
+import nl.decoy.fixtures.FixtureCatalog
 import nl.decoy.plugins.api.DiscoveryInput
 import nl.decoy.plugins.api.PluginRegistry
 import nl.decoy.plugins.api.PluginUiState
@@ -14,13 +14,13 @@ import org.junit.Test
 
 class ContextResolverTest {
     private fun resolver(): ContextResolver {
-        val registry = PluginRegistry(listOf(HelloFixturePlugin()))
+        val registry = PluginRegistry(FixtureCatalog.allPlugins())
         return ContextResolver(registry, RetentionController(InMemorySessionStore()))
     }
 
     @Test
     fun injectedQrResolvesHelloPlugin() {
-        val resolved = resolver().resolve(DiscoveryInput.Qr(HelloFixturePlugin.FIXTURE_QR))
+        val resolved = resolver().resolve(DiscoveryInput.Qr(FixtureCatalog.injectedHelloQr))
         assertNotNull(resolved)
         assertEquals("fixture.hello", resolved!!.plugin.id)
         assertTrue(resolved.ui is PluginUiState.Screen)
@@ -36,10 +36,10 @@ class ContextResolverTest {
     fun completeWipesSession() {
         val store = InMemorySessionStore()
         val resolver = ContextResolver(
-            PluginRegistry(listOf(HelloFixturePlugin())),
+            PluginRegistry(FixtureCatalog.allPlugins()),
             RetentionController(store),
         )
-        val resolved = resolver.resolve(DiscoveryInput.Qr(HelloFixturePlugin.FIXTURE_QR))!!
+        val resolved = resolver.resolve(DiscoveryInput.Qr(FixtureCatalog.injectedHelloQr))!!
         assertEquals(1, store.size())
         resolver.complete(resolved, success = true)
         assertEquals(0, store.size())

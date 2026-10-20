@@ -123,10 +123,10 @@ Names may be refined at implement time; responsibilities must not blur.
 
 ### Exit criteria
 
-- [ ] Campsite and terrace fixture flows complete end-to-end **on emulator with stubs**
-- [ ] Field policy assertions pass (keep / alias / omit / pay-elsewhere)
-- [ ] One-shot wipe + privacy network assertions green
-- [ ] Both flows reachable from debug/demo harness (or `adb` intent)
+- [x] Campsite and terrace fixture flows complete end-to-end **on emulator with stubs**
+- [x] Field policy assertions pass (keep / alias / omit / pay-elsewhere)
+- [x] One-shot wipe + privacy network assertions green
+- [x] Both flows reachable from debug/demo harness (or `adb` intent)
 
 ---
 

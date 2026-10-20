@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import nl.decoy.app.ui.DecoyAppScreen
 import nl.decoy.app.ui.theme.DecoyTheme
 import nl.decoy.core.ResolvedSession
+import nl.decoy.core.order.OrderOutcome
 import nl.decoy.fixtures.FixtureCatalog
 import nl.decoy.plugins.api.DiscoveryInput
 
@@ -33,14 +34,37 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background,
                 ) {
                     var session by remember { mutableStateOf(initial) }
+                    var lastOutcome by remember { mutableStateOf<OrderOutcome?>(null) }
                     DecoyAppScreen(
                         session = session,
+                        lastOutcome = lastOutcome,
                         onInjectHelloQr = {
                             session = app.resolver.resolve(
                                 DiscoveryInput.Qr(FixtureCatalog.injectedHelloQr),
                             )
+                            lastOutcome = null
                         },
-                        onComplete = {
+                        onInjectCampsiteQr = {
+                            session = app.resolver.resolve(
+                                DiscoveryInput.Qr(FixtureCatalog.injectedCampsiteQr),
+                            )
+                            lastOutcome = null
+                        },
+                        onInjectTerraceQr = {
+                            session = app.resolver.resolve(
+                                DiscoveryInput.Qr(FixtureCatalog.injectedTerraceQr),
+                            )
+                            lastOutcome = null
+                        },
+                        onPlaceOrder = { item, contextual ->
+                            val current = session ?: return@DecoyAppScreen
+                            val outcome = app.orderFlow.placeOrder(current, item, contextual)
+                            lastOutcome = outcome
+                            if (outcome.completed) {
+                                session = null
+                            }
+                        },
+                        onCompleteSimple = {
                             val current = session
                             if (current != null) {
                                 app.resolver.complete(current, success = true)
@@ -50,7 +74,7 @@ class MainActivity : ComponentActivity() {
                         onDismiss = {
                             val current = session
                             if (current != null) {
-                                app.resolver.complete(current, success = false)
+                                app.orderFlow.dismiss(current)
                                 session = null
                             }
                         },
@@ -63,7 +87,6 @@ class MainActivity : ComponentActivity() {
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         setIntent(intent)
-        // Phase 0: relaunch activity to apply inject; sufficient for adb smoke.
         recreate()
     }
 

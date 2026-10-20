@@ -31,15 +31,22 @@ Banned API gate (PowerShell / `pwsh`):
 ./gradlew :app:installDebug
 ```
 
-2. Launch and inject the hello fixture QR via `adb` (no camera hardware):
+2. Launch and inject a fixture QR via `adb` (no camera hardware):
 
 ```bash
+# Phase 1 hero — campsite sandwich (field policy)
+adb shell am start -n nl.decoy.app.debug/nl.decoy.app.MainActivity -a nl.decoy.app.INJECT_QR --es nl.decoy.app.extra.QR_PAYLOAD "decoy://campsite/order?fixture=1"
+
+# Terrace table
+adb shell am start -n nl.decoy.app.debug/nl.decoy.app.MainActivity -a nl.decoy.app.INJECT_QR --es nl.decoy.app.extra.QR_PAYLOAD "decoy://terrace/table=7?fixture=1"
+
+# Phase 0 hello
 adb shell am start -n nl.decoy.app.debug/nl.decoy.app.MainActivity -a nl.decoy.app.INJECT_QR --es nl.decoy.app.extra.QR_PAYLOAD "decoy://hello?fixture=1"
 ```
 
-Or open the app and tap **Inject hello fixture QR**.
+Or open the app and tap **Inject campsite order QR** / **Inject terrace table QR**.
 
-3. Confirm Compose shows **Hello Decoy**, then **Complete session** (session wiped).
+3. Pick a menu item → **Pay & order** (fake payment) → session wiped. Confirm IBAN/home are shown as blocked/omitted, not collected.
 
 ## Modules
 
